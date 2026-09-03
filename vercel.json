@@ -16,12 +16,6 @@
         "service": "backend"
       }
     },
-
-    {
-      "source": "/admin/:path*",
-      "destination": "/index.html"
-    },
-
     {
       "source": "/(.*)",
       "destination": {
