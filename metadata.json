@@ -1,0 +1,6 @@
+{
+  "name": "The Fenestration Insider",
+  "description": "Premier digital publication, market intelligence, and architectural portal for Windows, Doors, Façades, Architectural Glass, Hardware, and Building Envelopes.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

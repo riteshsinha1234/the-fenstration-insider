@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+@layer utilities {
+  /* Infinite Marquee Animations */
+  @keyframes marquee-slow {
+    0% { transform: translateX(0%); }
+    100% { transform: translateX(-50%); }
+  }
+
+  @keyframes marquee-ultra-slow {
+    0% { transform: translateX(0%); }
+    100% { transform: translateX(-50%); }
+  }
+
+  @keyframes marquee-reverse {
+    0% { transform: translateX(-50%); }
+    100% { transform: translateX(0%); }
+  }
+
+  .animate-marquee-top {
+    display: flex;
+    width: max-content;
+    animation: marquee-slow 40s linear infinite;
+  }
+
+  .animate-marquee-market-slow {
+    display: flex;
+    width: max-content;
+    animation: marquee-slow 50s linear infinite;
+  }
+
+  .animate-marquee-market-ultraslow {
+    display: flex;
+    width: max-content;
+    animation: marquee-ultra-slow 75s linear infinite;
+  }
+
+  .animate-marquee-leaders-slow {
+    display: flex;
+    width: max-content;
+    animation: marquee-slow 48s linear infinite;
+  }
+
+  .animate-marquee-leaders-ultraslow {
+    display: flex;
+    width: max-content;
+    animation: marquee-ultra-slow 70s linear infinite;
+  }
+
+  .paused {
+    animation-play-state: paused !important;
+  }
+
+  /* Geometric Balance Structural Grid Classes */
+  .geometric-border {
+    border-color: #e2e8f0;
+  }
+
+  .dark .geometric-border {
+    border-color: #334155;
+  }
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* Geometric Balance Base Typography & Reset */
+html {
+  scroll-behavior: smooth;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  background-color: #f8fafc;
+}
+
+/* Custom selection styling */
+::selection {
+  background-color: #f59e0b;
+  color: #0f172a;
+}
