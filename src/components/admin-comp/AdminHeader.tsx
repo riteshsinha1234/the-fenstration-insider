@@ -19,7 +19,7 @@ export default function AdminHeader() {
   return (
     <Box
       sx={{
-        height: { xs: "35px", md: "70px" },
+        height: { xs: "60px", md: "70px" },
         width: "100%",
         backgroundColor: background,
         borderBottom: `1px solid ${borderColor}`,
@@ -54,7 +54,6 @@ export default function AdminHeader() {
       </Box>
 
       {/* RIGHT */}
-
       <Box
         sx={{
           display: "flex",
@@ -63,7 +62,6 @@ export default function AdminHeader() {
         }}
       >
         {/* SEARCH */}
-
         <Box
           sx={{
             display: { xs: "none", md: "flex" }, // hide below md
@@ -169,13 +167,6 @@ export default function AdminHeader() {
           >
             View Website
           </Typography>
-
-          <OpenInNewOutlined
-            sx={{
-              color: txtWhite,
-              fontSize: "16px",
-            }}
-          />
 
           <OpenInNewOutlined
             sx={{

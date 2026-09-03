@@ -21,6 +21,7 @@ import {
   Primary,
   background,
   borderColor,
+  orangeGlow,
   txtLight,
   txtMuted,
   txtWhite,
@@ -137,10 +138,10 @@ export default function AdminSidebar() {
     >
       <Box
         sx={{
-          height: { xs: "60px", md: "80px" },
+          height: { xs: "60px", md: "70px" },
           display: "flex",
           alignItems: "center",
-          px: { xs: "16px", md: "20px" },
+          px: { xs: "16px", md: "16px" },
           borderBottom: `1px solid ${borderColor}`,
           gap: { xs: "12px", md: "14px" },
           flexShrink: 0,
@@ -148,8 +149,8 @@ export default function AdminSidebar() {
       >
         <Box
           sx={{
-            width: { xs: "34px", md: "42px" },
-            height: { xs: "34px", md: "42px" },
+            width: { xs: "20px", md: "25px" },
+            height: { xs: "20px", md: "25px" },
             border: `3px solid ${Primary}`,
             transform: "rotate(45deg)",
             position: "relative",
@@ -157,7 +158,7 @@ export default function AdminSidebar() {
             "&::after": {
               content: '""',
               position: "absolute",
-              inset: "7px",
+              inset: { xs: "3.5px", md: "7px" },
               border: `2px solid ${Primary}`,
             },
           }}
@@ -167,7 +168,7 @@ export default function AdminSidebar() {
           <Typography
             sx={{
               color: txtWhite,
-              fontSize: { xs: "11px", md: "13px" },
+              fontSize: { xs: "8px", md: "10px" },
               fontWeight: 800,
               lineHeight: 1.2,
               whiteSpace: "nowrap",
@@ -179,7 +180,7 @@ export default function AdminSidebar() {
           <Typography
             sx={{
               color: Primary,
-              fontSize: { xs: "12px", md: "15px" },
+              fontSize: { xs: "10px", md: "12px" },
               fontWeight: 800,
               mt: "3px",
             }}
@@ -234,17 +235,14 @@ export default function AdminSidebar() {
                       backgroundColor: Primary,
                     }
                   : {},
-
                 "&:hover": {
-                  backgroundColor: active
-                    ? undefined
-                    : "rgba(255,255,255,0.04)",
+                  backgroundColor: active ? undefined : orangeGlow,
                 },
               }}
             >
               <Icon
                 sx={{
-                  fontSize: { xs: "20px", md: "22px" },
+                  fontSize: { xs: "16px", md: "20px" },
                   color: active ? Primary : txtMuted,
                 }}
               />
@@ -264,7 +262,6 @@ export default function AdminSidebar() {
       </Box>
 
       {/* ADMIN PROFILE */}
-
       <Box
         sx={{
           borderTop: `1px solid ${borderColor}`,
@@ -279,8 +276,8 @@ export default function AdminSidebar() {
       >
         <Box
           sx={{
-            width: { xs: "42px", md: "48px" },
-            height: { xs: "42px", md: "48px" },
+            width: { xs: "28px", md: "32px" },
+            height: { xs: "28px", md: "32px" },
             borderRadius: "50%",
             border: `2px solid ${Primary}`,
             background: "linear-gradient(135deg, #31436A 0%, #8A4B19 100%)",
@@ -288,7 +285,7 @@ export default function AdminSidebar() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            fontSize: { xs: "16px", md: "20px" },
+            fontSize: { xs: "10px", md: "12px" },
             fontWeight: 700,
             flexShrink: 0,
           }}
@@ -316,7 +313,9 @@ export default function AdminSidebar() {
           </Typography>
         </Box>
 
-        <KeyboardArrowDown sx={{ color: txtLight, fontSize: "22px" }} />
+        <KeyboardArrowDown
+          sx={{ color: txtLight, fontSize: { xs: "18px", md: "20px" } }}
+        />
       </Box>
 
       {/* LOGOUT */}

@@ -9,7 +9,6 @@
       "framework": "express"
     }
   },
-
   "rewrites": [
     {
       "source": "/api/:path*",
@@ -17,9 +16,17 @@
         "service": "backend"
       }
     },
+
+    {
+      "source": "/admin/:path*",
+      "destination": "/index.html"
+    },
+
     {
       "source": "/(.*)",
-      "destination": "/index.html"
+      "destination": {
+        "service": "frontend"
+      }
     }
   ]
 }

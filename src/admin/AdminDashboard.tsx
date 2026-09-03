@@ -18,7 +18,7 @@ export default function AdminDashboard() {
       {/* RIGHT SIDE */}
       <Box
         sx={{
-          marginLeft: { xs: "220px", md: "265px" },
+          marginLeft: { xs: "200px", md: "240px" },
           minHeight: "100vh",
           backgroundColor: background,
         }}
