@@ -120,19 +120,24 @@ export default function AdminSidebar() {
         top: 0,
         left: 0,
         bottom: 0,
-        width: { xs: "220px", md: "265px" },
+        width: { xs: "200px", md: "240px" },
         backgroundColor: background,
         borderRight: `1px solid ${borderColor}`,
         display: "flex",
         flexDirection: "column",
+        overflowX: "hidden",
         overflowY: "auto",
+        scrollbarWidth: "none", // Firefox
+        "&::-webkit-scrollbar": {
+          display: "none", // Chrome, Safari, Edge
+        },
         zIndex: 1200,
         boxSizing: "border-box",
       }}
     >
       <Box
         sx={{
-          height: { xs: "90px", md: "102px" },
+          height: { xs: "60px", md: "80px" },
           display: "flex",
           alignItems: "center",
           px: { xs: "16px", md: "20px" },

@@ -19,14 +19,14 @@ export default function AdminHeader() {
   return (
     <Box
       sx={{
-        height: { xs: "90px", md: "102px" },
+        height: { xs: "35px", md: "70px" },
         width: "100%",
         backgroundColor: background,
         borderBottom: `1px solid ${borderColor}`,
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        px: { xs: "18px", md: "38px" },
+        px: { xs: "12px", md: "16px" },
         boxSizing: "border-box",
         flexShrink: 0,
       }}
@@ -35,7 +35,7 @@ export default function AdminHeader() {
         <Typography
           sx={{
             color: txtWhite,
-            fontSize: { xs: "18px", md: "25px" },
+            fontSize: { xs: "12px", md: "16px" },
             fontWeight: 700,
           }}
         >
@@ -45,7 +45,7 @@ export default function AdminHeader() {
         <Typography
           sx={{
             color: txtMuted,
-            fontSize: { xs: "10px", md: "13px" },
+            fontSize: { xs: "8px", md: "10px" },
             mt: "3px",
           }}
         >
@@ -59,21 +59,21 @@ export default function AdminHeader() {
         sx={{
           display: "flex",
           alignItems: "center",
-          gap: { xs: "10px", md: "18px" },
+          gap: { xs: "10px", md: "12px" },
         }}
       >
         {/* SEARCH */}
 
         <Box
           sx={{
-            width: { xs: "180px", md: "335px" },
-            height: { xs: "42px", md: "52px" },
+            display: { xs: "none", md: "flex" }, // hide below md
+            width: { md: "200px" },
+            height: { md: "35px" },
             border: `1px solid ${borderColor}`,
             borderRadius: "6px",
             backgroundColor: inputBackground,
-            display: "flex",
             alignItems: "center",
-            px: { xs: "12px", md: "16px" },
+            px: "16px",
             gap: "10px",
             boxSizing: "border-box",
           }}
@@ -81,9 +81,10 @@ export default function AdminHeader() {
           <SearchOutlined
             sx={{
               color: txtMuted,
-              fontSize: { xs: "20px", md: "24px" },
+              fontSize: "16px",
             }}
           />
+
           <Box
             component="input"
             placeholder="Search content, users, etc..."
@@ -93,7 +94,7 @@ export default function AdminHeader() {
               outline: "none",
               background: "transparent",
               color: txtLight,
-              fontSize: { xs: "11px", md: "13px" },
+              fontSize: "12px",
               "&::placeholder": {
                 color: txtMuted,
                 opacity: 1,
@@ -101,34 +102,40 @@ export default function AdminHeader() {
             }}
           />
         </Box>
+
         {/* NOTIFICATION */}
         <Box sx={{ position: "relative" }}>
           <IconButton
             sx={{
-              width: { xs: "42px", md: "50px" },
-              height: { xs: "42px", md: "50px" },
+              width: { xs: "25px", md: "35px" },
+              height: { xs: "25px", md: "35px" },
               border: `1px solid ${borderColor}`,
               borderRadius: "6px",
               color: txtWhite,
             }}
           >
-            <NotificationsNoneOutlined />
+            <NotificationsNoneOutlined
+              sx={{
+                color: txtWhite,
+                fontSize: { xs: "12px", md: "16px" },
+              }}
+            />
           </IconButton>
 
           <Box
             sx={{
               position: "absolute",
-              top: "-7px",
-              right: "-7px",
-              width: "22px",
-              height: "22px",
+              top: { xs: "-3px", md: "-7px" },
+              right: { xs: "-4px", md: "-7px" },
+              width: { xs: "12px", md: "16px" },
+              height: { xs: "12px", md: "16px" },
               borderRadius: "50%",
               backgroundColor: red,
               color: txtWhite,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: "11px",
+              fontSize: { xs: "8px", md: "10px" },
               fontWeight: 700,
             }}
           >
@@ -137,29 +144,25 @@ export default function AdminHeader() {
         </Box>
 
         {/* VIEW WEBSITE */}
-
         <Box
           onClick={() => {
             window.location.href = "/";
           }}
           sx={{
-            height: { xs: "42px", md: "50px" },
-            px: { xs: "12px", md: "20px" },
+            display: { xs: "none", md: "flex" }, // hide below md
+            height: "35px",
+            px: "10px",
             border: `1px solid ${Primary}`,
             borderRadius: "6px",
-            display: "flex",
             alignItems: "center",
-            gap: "8px",
+            gap: "4px",
             cursor: "pointer",
-            "&:hover": {
-              backgroundColor: "rgba(255,131,1,0.08)",
-            },
           }}
         >
           <Typography
             sx={{
               color: txtWhite,
-              fontSize: { xs: "11px", md: "13px" },
+              fontSize: "12px",
               fontWeight: 600,
               whiteSpace: "nowrap",
             }}
@@ -170,7 +173,14 @@ export default function AdminHeader() {
           <OpenInNewOutlined
             sx={{
               color: txtWhite,
-              fontSize: "18px",
+              fontSize: "16px",
+            }}
+          />
+
+          <OpenInNewOutlined
+            sx={{
+              color: txtWhite,
+              fontSize: { xs: "12px", md: "16px" },
             }}
           />
         </Box>
@@ -181,14 +191,13 @@ export default function AdminHeader() {
           sx={{
             display: "flex",
             alignItems: "center",
-
-            gap: "10px",
+            gap: { xs: "4px", md: "8px" },
           }}
         >
           <Box
             sx={{
-              width: { xs: "40px", md: "48px" },
-              height: { xs: "40px", md: "48px" },
+              width: { xs: "25px", md: "30px" },
+              height: { xs: "25px", md: "30px" },
               borderRadius: "50%",
               border: `1px solid ${borderColor}`,
               display: "flex",
@@ -199,15 +208,15 @@ export default function AdminHeader() {
             <PersonOutlined
               sx={{
                 color: txtWhite,
-                fontSize: { xs: "24px", md: "28px" },
+                fontSize: { xs: "12px", md: "16px" },
               }}
             />
           </Box>
-          <Box sx={{ display: { xs: "none", md: "block" } }}>
+          <Box sx={{ display: { xs: "block", md: "block" } }}>
             <Typography
               sx={{
                 color: txtWhite,
-                fontSize: "14px",
+                fontSize: { xs: "8px", md: "10px" },
                 fontWeight: 600,
               }}
             >
@@ -216,8 +225,7 @@ export default function AdminHeader() {
             <Typography
               sx={{
                 color: txtMuted,
-
-                fontSize: "12px",
+                fontSize: { xs: "8px", md: "10px" },
               }}
             >
               Super Admin
@@ -226,7 +234,8 @@ export default function AdminHeader() {
           <KeyboardArrowDown
             sx={{
               color: txtLight,
-              display: { xs: "none", md: "block" },
+              fontSize: { xs: "10px", md: "12px" },
+              display: { xs: "block", md: "block" },
             }}
           />
         </Box>
