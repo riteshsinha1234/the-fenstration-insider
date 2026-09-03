@@ -21,6 +21,7 @@ export const txtWhite = "#F7F8FA";
 export const txtLight = "#C1C9D6";
 export const txtMuted = "#8D9BB1";
 export const txtDark = "#111827";
+export const loginGry = "#4B5563";
 
 // Other Colors
 export const blue = "#2997E8";

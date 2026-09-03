@@ -1,46 +1,34 @@
 import { Box, Typography } from "@mui/material";
 
-import { background, txtWhite } from "../components/Colors";
-import AdminSidebar from "../components/admin-comp/AdminSidebar";
+import { txtWhite } from "../components/Colors";
 import AdminHeader from "../components/admin-comp/AdminHeader";
 
 export default function AdminDashboard() {
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        width: "100%",
-        backgroundColor: background,
-      }}
-    >
-      <AdminSidebar />
-
-      {/* RIGHT SIDE */}
+    <AdminHeader>
       <Box
         sx={{
-          marginLeft: { xs: "200px", md: "240px" },
-          minHeight: "100vh",
-          backgroundColor: background,
+          padding: {
+            xs: "18px",
+            md: "30px",
+          },
         }}
       >
-        {/* HEADER */}
-        <AdminHeader />
-        <Box
+        <Typography
           sx={{
-            padding: { xs: "18px", md: "30px" },
+            color: txtWhite,
+
+            fontSize: {
+              xs: "22px",
+              md: "30px",
+            },
+
+            fontWeight: 700,
           }}
         >
-          <Typography
-            sx={{
-              color: txtWhite,
-              fontSize: { xs: "22px", md: "30px" },
-              fontWeight: 700,
-            }}
-          >
-            Welcome back, Admin
-          </Typography>
-        </Box>
+          Welcome back, Admin
+        </Typography>
       </Box>
-    </Box>
+    </AdminHeader>
   );
 }

@@ -1,7 +1,6 @@
-import { useState, type FormEvent } from "react";
+import { useState } from "react";
 
 import { Box, Divider, Typography } from "@mui/material";
-
 import EmailOutlined from "@mui/icons-material/EmailOutlined";
 import LockOutlined from "@mui/icons-material/LockOutlined";
 import ArrowForward from "@mui/icons-material/ArrowForward";
@@ -9,6 +8,7 @@ import AdminPanelSettingsOutlined from "@mui/icons-material/AdminPanelSettingsOu
 
 import CustomButton from "../components/CustomButton";
 import CustomTextField from "../components/CustomTextField";
+import CustomContainer from "../components/CustomContainer";
 
 import {
   Primary,
@@ -16,39 +16,61 @@ import {
   background,
   borderColor,
   blue,
-  cardBackground,
   txtLight,
   txtMuted,
   txtWhite,
+  overlay,
+  red,
+  loginGry,
 } from "../components/Colors";
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
-
   const [password, setPassword] = useState("");
-
   const [error, setError] = useState("");
-
   const [loading, setLoading] = useState(false);
 
-  const isValidEmail = (value: string) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-  };
+  // STEP 1 = EMAIL
+  // STEP 2 = PASSWORD
+  const [step, setStep] = useState<"email" | "password">("email");
 
-  const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 
+  // =================================================
+  // CONTINUE AFTER EMAIL
+  // =================================================
+
+  const handleContinue = () => {
     if (!email.trim()) {
       setError("Please enter your admin email.");
       return;
     }
 
-    if (!isValidEmail(email.trim())) {
+    if (!isValidEmail) {
       setError("Please enter a valid email address.");
       return;
     }
 
-    if (!password) {
+    setError("");
+    setStep("password");
+  };
+
+  // =================================================
+  // CHANGE EMAIL
+  // =================================================
+
+  const handleChangeEmail = () => {
+    setStep("email");
+    setPassword("");
+    setError("");
+  };
+
+  // =================================================
+  // LOGIN
+  // =================================================
+
+  const handleLogin = async () => {
+    if (!password.trim()) {
       setError("Please enter your password.");
       return;
     }
@@ -56,32 +78,6 @@ export default function AdminLogin() {
     try {
       setLoading(true);
       setError("");
-
-      /*
-        Add your backend login API here later.
-
-        Example:
-
-        const response = await fetch(
-          "http://localhost:5000/api/auth/login",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              email: email.trim(),
-              password,
-            }),
-          }
-        );
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.message || "Login failed");
-        }
-      */
 
       console.log("Admin login:", {
         email,
@@ -95,13 +91,15 @@ export default function AdminLogin() {
   };
 
   return (
-    <Box
+    <CustomContainer
+      padding={0}
+      borderColor="transparent"
+      borderRadius={0}
+      height="auto"
       sx={{
         width: "100%",
         minHeight: "100vh",
-
         position: "relative",
-
         overflow: "hidden",
 
         background: `
@@ -115,144 +113,36 @@ export default function AdminLogin() {
         `,
 
         display: "flex",
-
         flexDirection: "column",
       }}
     >
       {/* ================================================= */}
-      {/* BACKGROUND DECORATION */}
+      {/* LOGO AND BRAND */}
       {/* ================================================= */}
 
       <Box
         sx={{
-          position: "absolute",
-
-          inset: 0,
-
-          pointerEvents: "none",
-
-          opacity: 0.32,
-
-          backgroundImage: `
-            linear-gradient(
-              rgba(65, 83, 106, 0.08) 1px,
-              transparent 1px
-            ),
-            linear-gradient(
-              90deg,
-              rgba(65, 83, 106, 0.08) 1px,
-              transparent 1px
-            )
-          `,
-
-          backgroundSize: "50px 50px",
-
-          maskImage:
-            "linear-gradient(to bottom, transparent 0%, black 25%, black 90%)",
-        }}
-      />
-
-      {/* LEFT DECORATIVE DIAMOND */}
-
-      <Box
-        sx={{
-          position: "absolute",
-
-          left: {
-            xs: "-130px",
-            md: "-40px",
-          },
-
-          top: {
-            xs: "240px",
-            md: "180px",
-          },
-
-          width: {
-            xs: "300px",
-            md: "380px",
-          },
-
-          height: {
-            xs: "300px",
-            md: "380px",
-          },
-
-          transform: "rotate(45deg)",
-
-          border: "28px solid rgba(50, 73, 99, 0.13)",
-
-          boxSizing: "border-box",
-
-          pointerEvents: "none",
-
-          "&::after": {
-            content: '""',
-
-            position: "absolute",
-
-            inset: "48px",
-
-            border: "20px solid rgba(50, 73, 99, 0.12)",
-          },
-        }}
-      />
-
-      {/* ================================================= */}
-      {/* HEADER / BRAND */}
-      {/* ================================================= */}
-
-      <Box
-        sx={{
-          position: {
-            xs: "relative",
-            md: "absolute",
-          },
-
-          top: {
-            xs: "22px",
-            md: "32px",
-          },
-
-          left: {
-            xs: "22px",
-            md: "34px",
-          },
-
+          position: { xs: "relative", md: "absolute" },
+          top: { xs: "20px", md: "30px" },
+          left: { xs: "20px", md: "30px" },
           zIndex: 5,
-
           display: "flex",
-
-          alignItems: "flex-start",
-
-          gap: {
-            xs: "14px",
-            md: "18px",
-          },
-
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "flex-start",
+          gap: { xs: "12px", md: "16px" },
           width: "fit-content",
+          textAlign: "left",
         }}
       >
         {/* LOGO MARK */}
-
         <Box
           sx={{
-            width: {
-              xs: "44px",
-              md: "56px",
-            },
-
-            height: {
-              xs: "44px",
-              md: "56px",
-            },
-
+            width: { xs: "25px", md: "30px" },
+            height: { xs: "25px", md: "30px" },
             position: "relative",
-
             flexShrink: 0,
-
             transform: "rotate(45deg)",
-
             border: {
               xs: `4px solid ${Primary}`,
               md: `5px solid ${Primary}`,
@@ -262,37 +152,44 @@ export default function AdminLogin() {
 
             "&::after": {
               content: '""',
-
               position: "absolute",
 
               inset: {
-                xs: "8px",
-                md: "10px",
+                xs: "4px",
+                md: "5px",
               },
 
               border: {
-                xs: `3px solid ${Primary}`,
-                md: `4px solid ${Primary}`,
+                xs: `2px solid ${Primary}`,
+                md: `3px solid ${Primary}`,
               },
             },
           }}
         />
 
-        <Box>
+        {/* BRAND TEXT */}
+
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-start",
+            justifyContent: "center",
+            textAlign: "left",
+          }}
+        >
           <Typography
             sx={{
               color: txtWhite,
 
               fontSize: {
-                xs: "18px",
-                md: "25px",
+                xs: "12px",
+                md: "16px",
               },
-
               fontWeight: 800,
-
               letterSpacing: "0.4px",
-
               lineHeight: 1.12,
+              textAlign: "left",
             }}
           >
             THE FENESTRATION
@@ -302,21 +199,12 @@ export default function AdminLogin() {
 
           <Typography
             sx={{
-              mt: "8px",
-
-              color: "#839AC0",
-
-              fontSize: {
-                xs: "11px",
-                md: "15px",
-              },
-
+              mt: { xs: "4px", md: "8px" },
+              color: txtLight,
+              fontSize: { xs: "10px", md: "12px" },
               fontWeight: 700,
-
-              letterSpacing: {
-                xs: "1.2px",
-                md: "1.8px",
-              },
+              letterSpacing: { xs: "1.2px", md: "1.8px" },
+              textAlign: "left",
             }}
           >
             ADMINISTRATION PORTAL
@@ -325,386 +213,471 @@ export default function AdminLogin() {
       </Box>
 
       {/* ================================================= */}
-      {/* CENTER CONTENT */}
+      {/* LOGIN BLOCK */}
       {/* ================================================= */}
 
-      <Box
+      <CustomContainer
+        padding={0}
+        bgcolor="transparent"
+        borderColor="transparent"
+        borderRadius={0}
+        height="auto"
         sx={{
           position: "relative",
-
           zIndex: 2,
-
           flex: 1,
-
           width: "100%",
-
-          display: "flex",
-
           alignItems: "center",
-
           justifyContent: "center",
-
-          boxSizing: "border-box",
-
-          px: {
-            xs: "16px",
-            sm: "24px",
-            md: "30px",
-          },
-
-          pt: {
-            xs: "110px",
-            md: "70px",
-          },
-
-          pb: {
-            xs: "120px",
-            md: "110px",
-          },
+          px: { xs: "16px", md: "30px" },
+          pt: { xs: "50px", md: "80px" },
+          pb: { xs: "120px", md: "110px" },
         }}
       >
-        <Box
-          component="form"
-          onSubmit={handleLogin}
+        {/* ================================================= */}
+        {/* LOGIN CARD */}
+        {/* ================================================= */}
+
+        <CustomContainer
+          padding={0}
+          bgcolor="transparent"
+          borderColor={borderColor}
+          borderRadius="5px"
+          height="auto"
+          shadow="0 20px 70px rgba(0,0,0,0.16)"
           sx={{
             width: "100%",
-
-            maxWidth: "620px",
-
-            background:
-              "linear-gradient(180deg, rgba(7,25,45,0.78) 0%, rgba(3,20,38,0.82) 100%)",
-
+            maxWidth: { xs: "500px", md: "600px" },
+            background: overlay,
             backdropFilter: "blur(6px)",
-
-            border: `1px solid ${borderColor}`,
-
-            borderRadius: "5px",
-
-            px: {
-              xs: "22px",
-              sm: "36px",
-              md: "42px",
-            },
-
-            py: {
-              xs: "30px",
-              sm: "38px",
-              md: "40px",
-            },
-
-            boxSizing: "border-box",
-
-            boxShadow: "0 20px 70px rgba(0,0,0,0.16)",
+            px: { xs: "22px", md: "42px" },
+            py: { xs: "30px", md: "40px" },
+            alignItems: "center",
+            justifyContent: "center",
+            textAlign: "center",
           }}
         >
+          {/* ================================================= */}
           {/* SECURE ADMIN ACCESS */}
+          {/* ================================================= */}
 
-          <Box
+          <Typography
+            variant="body1"
             sx={{
-              display: "flex",
-
-              flexDirection: "column",
-
-              alignItems: "center",
-
-              mb: "16px",
+              color: Primary,
+              fontSize: { xs: "10px", md: "12px" },
+              fontWeight: 800,
+              letterSpacing: "0.4px",
+              textAlign: "center",
             }}
           >
-            <Typography
-              sx={{
-                color: Primary,
+            SECURE ADMIN ACCESS
+          </Typography>
 
-                fontSize: {
-                  xs: "11px",
-                  md: "13px",
-                },
+          {/* ORANGE LINE */}
 
-                fontWeight: 800,
-
-                letterSpacing: "0.4px",
-              }}
-            >
-              SECURE ADMIN ACCESS
-            </Typography>
-
-            <Box
-              sx={{
-                width: "52px",
-
-                height: "2px",
-
-                backgroundColor: Primary,
-
-                mt: "10px",
-              }}
-            />
-          </Box>
+          <Typography
+            component="span"
+            sx={{
+              display: "block",
+              width: "48px",
+              height: "2px",
+              backgroundColor: Primary,
+              mt: "10px",
+            }}
+          />
 
           {/* TITLE */}
-
           <Typography
             sx={{
               color: txtWhite,
-
-              fontSize: {
-                xs: "30px",
-                sm: "35px",
-                md: "39px",
-              },
-
+              fontSize: { xs: "16px", md: "24px" },
               fontWeight: 800,
-
               lineHeight: 1.15,
-
               textAlign: "center",
+              mt: { xs: "15px", md: "20px" },
             }}
           >
             Welcome Back
           </Typography>
 
           {/* DESCRIPTION */}
-
           <Typography
             sx={{
               color: txtLight,
-
-              fontSize: {
-                xs: "13px",
-                md: "16px",
-              },
-
+              fontSize: { xs: "12px", md: "16px" },
               fontWeight: 400,
-
               textAlign: "center",
-
               mt: "10px",
-
-              mb: {
-                xs: "30px",
-                md: "38px",
-              },
+              mb: { xs: "15px", md: "20px" },
             }}
           >
-            Sign in to manage The Fenestration Insider platform.
+            {step === "email"
+              ? "Sign in to manage The Fenestration Insider platform."
+              : "Enter your password to continue to the admin portal."}
           </Typography>
 
-          {/* EMAIL */}
-
-          <Typography
-            component="label"
-            htmlFor="admin-email"
-            sx={{
-              display: "block",
-
-              color: txtWhite,
-
-              fontSize: {
-                xs: "13px",
-                md: "14px",
-              },
-
-              fontWeight: 600,
-
-              mb: "8px",
-            }}
-          >
-            Admin Email
-          </Typography>
-
-          <CustomTextField
-            id="admin-email"
-            type="email"
-            value={email}
-            onChange={(event) => {
-              setEmail(event.target.value);
-
-              if (error) {
-                setError("");
-              }
-            }}
-            placeholder="Enter admin email"
-            autoComplete="email"
-            limit={100}
-            height="52px"
-            borderRadius="4px"
-            startIcon={
-              <EmailOutlined
+          {/* STEP 1 - EMAIL */}
+          {step === "email" && (
+            <>
+              <CustomContainer
+                padding={0}
+                bgcolor="transparent"
+                borderColor="transparent"
+                borderRadius={0}
+                height="auto"
+                width="100%"
                 sx={{
-                  fontSize: "20px",
-                  color: txtMuted,
+                  alignItems: "stretch",
+                }}
+              >
+                <Typography
+                  component="label"
+                  htmlFor="admin-email"
+                  sx={{
+                    color: txtWhite,
+
+                    fontSize: {
+                      xs: "12px",
+                      md: "14px",
+                    },
+
+                    fontWeight: 600,
+
+                    mb: {
+                      xs: "4px",
+                      md: "8px",
+                    },
+
+                    textAlign: "left",
+                  }}
+                >
+                  Admin Email
+                </Typography>
+
+                <CustomTextField
+                  id="admin-email"
+                  type="email"
+                  value={email}
+                  onChange={(event) => {
+                    setEmail(event.target.value);
+
+                    if (error) {
+                      setError("");
+                    }
+                  }}
+                  placeholder="Enter admin email"
+                  autoComplete="email"
+                  limit={100}
+                  height="48px"
+                  borderRadius="4px"
+                  startIcon={
+                    <EmailOutlined
+                      sx={{
+                        fontSize: "20px",
+                        color: txtMuted,
+                      }}
+                    />
+                  }
+                />
+              </CustomContainer>
+
+              {/* EMAIL ERROR */}
+
+              {error && (
+                <Typography
+                  sx={{
+                    width: "100%",
+                    color: "#FF6464",
+                    fontSize: "12px",
+                    textAlign: "center",
+                    mt: "10px",
+                    fontWeight: 500,
+                  }}
+                >
+                  {error}
+                </Typography>
+              )}
+
+              {/* CONTINUE BUTTON */}
+
+              <CustomButton
+                text="CONTINUE"
+                icon={
+                  <ArrowForward
+                    sx={{
+                      fontSize: "22px",
+                    }}
+                  />
+                }
+                onClick={handleContinue}
+                disabled={!isValidEmail}
+                bgColor={isValidEmail ? Primary : "#4B5563"}
+                hoverColor={isValidEmail ? Secondary : "#4B5563"}
+                textColor={isValidEmail ? background : txtMuted}
+                borderColor={isValidEmail ? Primary : "#4B5563"}
+                height="48px"
+                width="100%"
+                borderRadius="4px"
+                fontSize="16px"
+                fontWeight={800}
+                sx={{
+                  mt: "20px",
+                  letterSpacing: "0.25px",
+
+                  flexDirection: "row-reverse",
+                  gap: "8px",
+
+                  "& .MuiButton-startIcon": {
+                    marginLeft: 0,
+                    marginRight: 0,
+                  },
+
+                  "&.Mui-disabled": {
+                    backgroundColor: "#4B5563",
+                    color: txtMuted,
+                    borderColor: "#4B5563",
+                    opacity: 1,
+                  },
+
+                  "&:hover": {
+                    transform: isValidEmail ? "translateY(-1px)" : "none",
+                  },
+
+                  transition: "background-color 0.2s ease, transform 0.2s ease",
                 }}
               />
-            }
-          />
-
-          {/* PASSWORD */}
-
-          <Typography
-            component="label"
-            htmlFor="admin-password"
-            sx={{
-              display: "block",
-
-              color: txtWhite,
-
-              fontSize: {
-                xs: "13px",
-                md: "14px",
-              },
-
-              fontWeight: 600,
-
-              mt: "20px",
-
-              mb: "8px",
-            }}
-          >
-            Password
-          </Typography>
-
-          <CustomTextField
-            id="admin-password"
-            type="password"
-            value={password}
-            onChange={(event) => {
-              setPassword(event.target.value);
-
-              if (error) {
-                setError("");
-              }
-            }}
-            placeholder="Enter password"
-            autoComplete="current-password"
-            limit={100}
-            height="52px"
-            borderRadius="4px"
-            startIcon={
-              <LockOutlined
-                sx={{
-                  fontSize: "20px",
-                  color: txtMuted,
-                }}
-              />
-            }
-          />
-
-          {/* FORGOT PASSWORD */}
-
-          <Box
-            sx={{
-              display: "flex",
-
-              justifyContent: "flex-end",
-
-              mt: "10px",
-            }}
-          >
-            <Typography
-              component="button"
-              type="button"
-              sx={{
-                appearance: "none",
-
-                border: 0,
-
-                outline: 0,
-
-                padding: 0,
-
-                background: "transparent",
-
-                color: blue,
-
-                fontSize: {
-                  xs: "12px",
-                  md: "14px",
-                },
-
-                cursor: "pointer",
-
-                "&:hover": {
-                  textDecoration: "underline",
-                },
-              }}
-            >
-              Forgot password?
-            </Typography>
-          </Box>
-
-          {/* ERROR */}
-
-          {error && (
-            <Typography
-              sx={{
-                color: "#FF6464",
-
-                fontSize: "12px",
-
-                textAlign: "center",
-
-                mt: "12px",
-
-                fontWeight: 500,
-              }}
-            >
-              {error}
-            </Typography>
+            </>
           )}
 
-          {/* LOGIN BUTTON */}
-
-          <CustomButton
-            text={loading ? "SIGNING IN..." : "SIGN IN TO ADMIN PORTAL"}
-            icon={
-              !loading ? (
-                <ArrowForward
+          {/* STEP 2 - PASSWORD */}
+          {step === "password" && (
+            <>
+              {/* CURRENT EMAIL */}
+              <CustomContainer
+                padding={0}
+                bgcolor="transparent"
+                borderColor="transparent"
+                borderRadius={0}
+                height="auto"
+                width="100%"
+                flexDirection="row"
+                sx={{
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  mb: "16px",
+                  gap: "10px",
+                }}
+              >
+                <Typography
                   sx={{
-                    fontSize: "22px",
+                    color: txtLight,
+                    fontSize: { xs: "10px", md: "12px" },
+                    textAlign: "left",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
                   }}
+                >
+                  {email}
+                </Typography>
+
+                <Typography
+                  component="button"
+                  type="button"
+                  onClick={handleChangeEmail}
+                  sx={{
+                    appearance: "none",
+                    border: 0,
+                    outline: 0,
+                    p: 0,
+                    background: "transparent",
+                    color: Primary,
+                    fontSize: { xs: "10px", md: "12px" },
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    flexShrink: 0,
+                    "&:hover": {
+                      textDecoration: "underline",
+                    },
+                  }}
+                >
+                  Change
+                </Typography>
+              </CustomContainer>
+
+              {/* PASSWORD FIELD */}
+
+              <CustomContainer
+                padding={0}
+                bgcolor="transparent"
+                borderColor="transparent"
+                borderRadius={0}
+                height="auto"
+                width="100%"
+                sx={{
+                  alignItems: "stretch",
+                }}
+              >
+                <Typography
+                  component="label"
+                  htmlFor="admin-password"
+                  sx={{
+                    color: txtWhite,
+                    fontSize: { xs: "12px", md: "14px" },
+                    fontWeight: 600,
+                    mb: { xs: "4px", md: "8px" },
+                    textAlign: "left",
+                  }}
+                >
+                  Password
+                </Typography>
+
+                <CustomTextField
+                  id="admin-password"
+                  type="password"
+                  value={password}
+                  onChange={(event) => {
+                    setPassword(event.target.value);
+                    if (error) {
+                      setError("");
+                    }
+                  }}
+                  placeholder="Enter password"
+                  autoComplete="current-password"
+                  limit={100}
+                  height="48px"
+                  borderRadius="4px"
+                  startIcon={
+                    <LockOutlined
+                      sx={{
+                        fontSize: "20px",
+                        color: txtMuted,
+                      }}
+                    />
+                  }
                 />
-              ) : null
-            }
-            bgColor={Primary}
-            hoverColor={Secondary}
-            textColor={background}
-            borderColor={Primary}
-            height="58px"
-            borderRadius="4px"
-            fontSize="16px"
-            fontWeight={800}
-            disabled={loading}
-            type="submit"
+              </CustomContainer>
+
+              {/* FORGOT PASSWORD */}
+
+              <CustomContainer
+                padding={0}
+                bgcolor="transparent"
+                borderColor="transparent"
+                borderRadius={0}
+                height="auto"
+                width="100%"
+                flexDirection="row"
+                sx={{
+                  justifyContent: "flex-end",
+                  mt: "10px",
+                }}
+              >
+                <Typography
+                  component="button"
+                  type="button"
+                  sx={{
+                    appearance: "none",
+                    border: 0,
+                    outline: 0,
+                    p: 0,
+                    background: "transparent",
+                    color: blue,
+                    fontSize: { xs: "12px", md: "14px" },
+                    cursor: "pointer",
+                    "&:hover": {
+                      textDecoration: "underline",
+                    },
+                  }}
+                >
+                  Forgot password?
+                </Typography>
+              </CustomContainer>
+
+              {/* LOGIN ERROR */}
+
+              {error && (
+                <Typography
+                  sx={{
+                    width: "100%",
+                    color: red,
+                    fontSize: "12px",
+                    textAlign: "center",
+                    mt: "10px",
+                    fontWeight: 500,
+                  }}
+                >
+                  {error}
+                </Typography>
+              )}
+
+              {/* LOGIN BUTTON */}
+
+              <CustomButton
+                text={loading ? "SIGNING IN..." : "SIGN IN TO ADMIN PORTAL"}
+                icon={
+                  !loading ? (
+                    <ArrowForward
+                      sx={{
+                        fontSize: "22px",
+                      }}
+                    />
+                  ) : null
+                }
+                onClick={handleLogin}
+                disabled={loading || !password.trim()}
+                bgColor={password.trim() ? Primary : "#4B5563"}
+                hoverColor={password.trim() ? Secondary : "#4B5563"}
+                textColor={password.trim() ? background : txtMuted}
+                borderColor={password.trim() ? Primary : "#4B5563"}
+                height="48px"
+                width="100%"
+                borderRadius="4px"
+                fontSize="16px"
+                fontWeight={800}
+                sx={{
+                  mt: "10px",
+                  letterSpacing: "0.25px",
+                  flexDirection: "row-reverse",
+                  gap: "8px",
+                  "& .MuiButton-startIcon": {
+                    marginLeft: 0,
+                    marginRight: 0,
+                  },
+                  "&.Mui-disabled": {
+                    backgroundColor: loginGry,
+                    color: txtMuted,
+                    borderColor: loginGry,
+                    opacity: 1,
+                  },
+
+                  "&:hover": {
+                    transform: password.trim() ? "translateY(-1px)" : "none",
+                  },
+
+                  transition: "background-color 0.2s ease, transform 0.2s ease",
+                }}
+              />
+            </>
+          )}
+
+          {/* ================================================= */}
+          {/* SECURITY DIVIDER */}
+          {/* ================================================= */}
+
+          <CustomContainer
+            padding={0}
+            bgcolor="transparent"
+            borderColor="transparent"
+            borderRadius={0}
+            height="auto"
+            width="100%"
+            flexDirection="row"
             sx={{
-              mt: "20px",
-
-              letterSpacing: "0.25px",
-
-              flexDirection: "row-reverse",
-
-              gap: "8px",
-
-              "& .MuiButton-startIcon": {
-                marginLeft: 0,
-                marginRight: 0,
-              },
-
-              "&:hover": {
-                transform: "translateY(-1px)",
-              },
-
-              transition: "background-color 0.2s ease, transform 0.2s ease",
-            }}
-          />
-
-          {/* ADMIN SECURITY SECTION */}
-
-          <Box
-            sx={{
-              display: "flex",
-
               alignItems: "center",
-
-              gap: "14px",
+              justifyContent: "center",
+              gap: "10px",
 
               mt: {
                 xs: "28px",
@@ -715,41 +688,27 @@ export default function AdminLogin() {
             <Divider
               sx={{
                 flex: 1,
-
                 borderColor,
               }}
             />
 
-            <Box
+            <AdminPanelSettingsOutlined
               sx={{
-                width: "36px",
-
-                height: "40px",
-
-                display: "flex",
-
-                alignItems: "center",
-
-                justifyContent: "center",
-
                 color: Primary,
+                fontSize: "34px",
+                flexShrink: 0,
               }}
-            >
-              <AdminPanelSettingsOutlined
-                sx={{
-                  fontSize: "34px",
-                }}
-              />
-            </Box>
+            />
 
             <Divider
               sx={{
                 flex: 1,
-
                 borderColor,
               }}
             />
-          </Box>
+          </CustomContainer>
+
+          {/* SECURITY TEXT */}
 
           <Typography
             sx={{
@@ -761,10 +720,12 @@ export default function AdminLogin() {
               },
 
               fontWeight: 700,
-
               textAlign: "center",
 
-              mt: "10px",
+              mt: {
+                xs: "5px",
+                md: "10px",
+              },
             }}
           >
             Authorized administrators only
@@ -775,21 +736,19 @@ export default function AdminLogin() {
               color: txtLight,
 
               fontSize: {
-                xs: "11px",
-                md: "13px",
+                xs: "10px",
+                md: "12px",
               },
 
               fontWeight: 400,
-
               textAlign: "center",
-
               mt: "4px",
             }}
           >
             Access to this system is monitored and restricted.
           </Typography>
-        </Box>
-      </Box>
+        </CustomContainer>
+      </CustomContainer>
 
       {/* ================================================= */}
       {/* FOOTER */}
@@ -803,8 +762,8 @@ export default function AdminLogin() {
           },
 
           bottom: {
-            xs: "20px",
-            md: "18px",
+            xs: "19px",
+            md: "16px",
           },
 
           left: {
@@ -831,7 +790,6 @@ export default function AdminLogin() {
         <Divider
           sx={{
             borderColor: "rgba(65,83,106,0.55)",
-
             mb: "18px",
           }}
         />
@@ -839,27 +797,33 @@ export default function AdminLogin() {
         <Typography
           sx={{
             color: txtLight,
+
             fontSize: {
-              xs: "11px",
-              md: "13px",
+              xs: "10px",
+              md: "12px",
             },
 
             textAlign: "center",
 
-            mb: "8px",
+            mb: {
+              xs: "4px",
+              md: "8px",
+            },
           }}
         >
           © 2026 The Fenestration Insider
         </Typography>
+
         <Box
           sx={{
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             flexWrap: "wrap",
+
             gap: {
               xs: "8px",
-              sm: "15px",
+              md: "12px",
             },
           }}
         >
@@ -885,7 +849,6 @@ export default function AdminLogin() {
           <Typography
             sx={{
               color: Primary,
-
               fontSize: "12px",
             }}
           >
@@ -914,7 +877,6 @@ export default function AdminLogin() {
           <Typography
             sx={{
               color: Primary,
-
               fontSize: "12px",
             }}
           >
@@ -941,6 +903,6 @@ export default function AdminLogin() {
           </Typography>
         </Box>
       </Box>
-    </Box>
+    </CustomContainer>
   );
 }

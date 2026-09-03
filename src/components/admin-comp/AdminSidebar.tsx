@@ -15,7 +15,6 @@ import ImageOutlined from "@mui/icons-material/ImageOutlined";
 import PeopleOutlineOutlined from "@mui/icons-material/PeopleOutlineOutlined";
 import SettingsOutlined from "@mui/icons-material/SettingsOutlined";
 import LogoutOutlined from "@mui/icons-material/LogoutOutlined";
-import KeyboardArrowDown from "@mui/icons-material/KeyboardArrowDown";
 
 import {
   Primary,
@@ -60,7 +59,7 @@ const menuItems: SidebarItem[] = [
     path: "/admin/sustainability",
   },
   {
-    label: "Façade Lab",
+    label: "Facade Lab",
     icon: ScienceOutlined,
     path: "/admin/facade-lab",
   },
@@ -261,65 +260,7 @@ export default function AdminSidebar() {
         })}
       </Box>
 
-      {/* ADMIN PROFILE */}
-      <Box
-        sx={{
-          borderTop: `1px solid ${borderColor}`,
-          borderBottom: `1px solid ${borderColor}`,
-          px: { xs: "16px", md: "20px" },
-          py: { xs: "15px", md: "18px" },
-          display: "flex",
-          alignItems: "center",
-          gap: "12px",
-          flexShrink: 0,
-        }}
-      >
-        <Box
-          sx={{
-            width: { xs: "28px", md: "32px" },
-            height: { xs: "28px", md: "32px" },
-            borderRadius: "50%",
-            border: `2px solid ${Primary}`,
-            background: "linear-gradient(135deg, #31436A 0%, #8A4B19 100%)",
-            color: txtWhite,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: { xs: "10px", md: "12px" },
-            fontWeight: 700,
-            flexShrink: 0,
-          }}
-        >
-          AD
-        </Box>
-
-        <Box sx={{ flex: 1 }}>
-          <Typography
-            sx={{
-              color: txtWhite,
-              fontSize: { xs: "12px", md: "14px" },
-              fontWeight: 600,
-            }}
-          >
-            Administrator
-          </Typography>
-          <Typography
-            sx={{
-              color: txtMuted,
-              fontSize: { xs: "10px", md: "12px" },
-            }}
-          >
-            Super Admin
-          </Typography>
-        </Box>
-
-        <KeyboardArrowDown
-          sx={{ color: txtLight, fontSize: { xs: "18px", md: "20px" } }}
-        />
-      </Box>
-
       {/* LOGOUT */}
-
       <Box
         sx={{
           px: { xs: "16px", md: "20px" },
