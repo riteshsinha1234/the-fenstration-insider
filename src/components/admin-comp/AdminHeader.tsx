@@ -160,7 +160,7 @@ export default function AdminHeader({ children }: AdminHeaderProps) {
                 sx={{
                   position: "absolute",
                   top: { xs: "-3px", md: "-7px" },
-                  right: { xs: "-4px", md: "-7px" },
+                  right: { xs: "-3px", md: "-7px" },
                   width: { xs: "12px", md: "16px" },
                   height: { xs: "12px", md: "16px" },
                   borderRadius: "50%",
@@ -173,7 +173,7 @@ export default function AdminHeader({ children }: AdminHeaderProps) {
                   fontWeight: 700,
                 }}
               >
-                8
+                0
               </Box>
             </Box>
 
