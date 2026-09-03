@@ -1,11 +1,12 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 import { Box, Divider, Typography } from "@mui/material";
 import EmailOutlined from "@mui/icons-material/EmailOutlined";
 import LockOutlined from "@mui/icons-material/LockOutlined";
 import ArrowForward from "@mui/icons-material/ArrowForward";
 import AdminPanelSettingsOutlined from "@mui/icons-material/AdminPanelSettingsOutlined";
-
 import CustomButton from "../components/CustomButton";
 import CustomTextField from "../components/CustomTextField";
 import CustomContainer from "../components/CustomContainer";
@@ -23,23 +24,18 @@ import {
   red,
   loginGry,
 } from "../components/Colors";
+import { auth } from "@/backend/src/firebase";
 
 export default function AdminLogin() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
-  // STEP 1 = EMAIL
-  // STEP 2 = PASSWORD
   const [step, setStep] = useState<"email" | "password">("email");
-
   const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 
-  // =================================================
   // CONTINUE AFTER EMAIL
-  // =================================================
-
   const handleContinue = () => {
     if (!email.trim()) {
       setError("Please enter your admin email.");
@@ -55,20 +51,14 @@ export default function AdminLogin() {
     setStep("password");
   };
 
-  // =================================================
   // CHANGE EMAIL
-  // =================================================
-
   const handleChangeEmail = () => {
     setStep("email");
     setPassword("");
     setError("");
   };
 
-  // =================================================
   // LOGIN
-  // =================================================
-
   const handleLogin = async () => {
     if (!password.trim()) {
       setError("Please enter your password.");
@@ -79,11 +69,34 @@ export default function AdminLogin() {
       setLoading(true);
       setError("");
 
-      console.log("Admin login:", {
-        email,
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email.trim(),
         password,
+      );
+
+      const token = await userCredential.user.getIdToken();
+
+      const response = await fetch("http://localhost:5000/api/auth/verify", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
-    } catch {
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        await auth.signOut();
+        setError(
+          data.message || "You are not authorized to access the admin portal.",
+        );
+        return;
+      }
+
+      navigate("/admin/dashboard");
+    } catch (error) {
+      console.error("Admin login error:", error);
       setError("Invalid admin email or password.");
     } finally {
       setLoading(false);
@@ -101,7 +114,6 @@ export default function AdminLogin() {
         minHeight: "100vh",
         position: "relative",
         overflow: "hidden",
-
         background: `
           radial-gradient(
             circle at 50% 45%,
@@ -111,14 +123,11 @@ export default function AdminLogin() {
           ),
           ${background}
         `,
-
         display: "flex",
         flexDirection: "column",
       }}
     >
-      {/* ================================================= */}
       {/* LOGO AND BRAND */}
-      {/* ================================================= */}
 
       <Box
         sx={{
@@ -136,6 +145,7 @@ export default function AdminLogin() {
         }}
       >
         {/* LOGO MARK */}
+
         <Box
           sx={{
             width: { xs: "25px", md: "30px" },
@@ -143,22 +153,13 @@ export default function AdminLogin() {
             position: "relative",
             flexShrink: 0,
             transform: "rotate(45deg)",
-            border: {
-              xs: `4px solid ${Primary}`,
-              md: `5px solid ${Primary}`,
-            },
-
+            border: { xs: `4px solid ${Primary}`, md: `5px solid ${Primary}` },
             boxSizing: "border-box",
 
             "&::after": {
               content: '""',
               position: "absolute",
-
-              inset: {
-                xs: "4px",
-                md: "5px",
-              },
-
+              inset: { xs: "4px", md: "5px" },
               border: {
                 xs: `2px solid ${Primary}`,
                 md: `3px solid ${Primary}`,
@@ -181,11 +182,7 @@ export default function AdminLogin() {
           <Typography
             sx={{
               color: txtWhite,
-
-              fontSize: {
-                xs: "12px",
-                md: "16px",
-              },
+              fontSize: { xs: "12px", md: "16px" },
               fontWeight: 800,
               letterSpacing: "0.4px",
               lineHeight: 1.12,
@@ -212,9 +209,7 @@ export default function AdminLogin() {
         </Box>
       </Box>
 
-      {/* ================================================= */}
       {/* LOGIN BLOCK */}
-      {/* ================================================= */}
 
       <CustomContainer
         padding={0}
@@ -234,9 +229,7 @@ export default function AdminLogin() {
           pb: { xs: "120px", md: "110px" },
         }}
       >
-        {/* ================================================= */}
         {/* LOGIN CARD */}
-        {/* ================================================= */}
 
         <CustomContainer
           padding={0}
@@ -257,9 +250,7 @@ export default function AdminLogin() {
             textAlign: "center",
           }}
         >
-          {/* ================================================= */}
           {/* SECURE ADMIN ACCESS */}
-          {/* ================================================= */}
 
           <Typography
             variant="body1"
@@ -288,6 +279,7 @@ export default function AdminLogin() {
           />
 
           {/* TITLE */}
+
           <Typography
             sx={{
               color: txtWhite,
@@ -302,6 +294,7 @@ export default function AdminLogin() {
           </Typography>
 
           {/* DESCRIPTION */}
+
           <Typography
             sx={{
               color: txtLight,
@@ -318,6 +311,7 @@ export default function AdminLogin() {
           </Typography>
 
           {/* STEP 1 - EMAIL */}
+
           {step === "email" && (
             <>
               <CustomContainer
@@ -336,19 +330,9 @@ export default function AdminLogin() {
                   htmlFor="admin-email"
                   sx={{
                     color: txtWhite,
-
-                    fontSize: {
-                      xs: "12px",
-                      md: "14px",
-                    },
-
+                    fontSize: { xs: "12px", md: "14px" },
                     fontWeight: 600,
-
-                    mb: {
-                      xs: "4px",
-                      md: "8px",
-                    },
-
+                    mb: { xs: "4px", md: "8px" },
                     textAlign: "left",
                   }}
                 >
@@ -388,7 +372,7 @@ export default function AdminLogin() {
                 <Typography
                   sx={{
                     width: "100%",
-                    color: "#FF6464",
+                    color: red,
                     fontSize: "12px",
                     textAlign: "center",
                     mt: "10px",
@@ -412,10 +396,10 @@ export default function AdminLogin() {
                 }
                 onClick={handleContinue}
                 disabled={!isValidEmail}
-                bgColor={isValidEmail ? Primary : "#4B5563"}
-                hoverColor={isValidEmail ? Secondary : "#4B5563"}
+                bgColor={isValidEmail ? Primary : loginGry}
+                hoverColor={isValidEmail ? Secondary : loginGry}
                 textColor={isValidEmail ? background : txtMuted}
-                borderColor={isValidEmail ? Primary : "#4B5563"}
+                borderColor={isValidEmail ? Primary : loginGry}
                 height="48px"
                 width="100%"
                 borderRadius="4px"
@@ -424,7 +408,6 @@ export default function AdminLogin() {
                 sx={{
                   mt: "20px",
                   letterSpacing: "0.25px",
-
                   flexDirection: "row-reverse",
                   gap: "8px",
 
@@ -434,9 +417,9 @@ export default function AdminLogin() {
                   },
 
                   "&.Mui-disabled": {
-                    backgroundColor: "#4B5563",
+                    backgroundColor: loginGry,
                     color: txtMuted,
-                    borderColor: "#4B5563",
+                    borderColor: loginGry,
                     opacity: 1,
                   },
 
@@ -451,9 +434,11 @@ export default function AdminLogin() {
           )}
 
           {/* STEP 2 - PASSWORD */}
+
           {step === "password" && (
             <>
               {/* CURRENT EMAIL */}
+
               <CustomContainer
                 padding={0}
                 bgcolor="transparent"
@@ -497,6 +482,7 @@ export default function AdminLogin() {
                     fontWeight: 600,
                     cursor: "pointer",
                     flexShrink: 0,
+
                     "&:hover": {
                       textDecoration: "underline",
                     },
@@ -539,6 +525,7 @@ export default function AdminLogin() {
                   value={password}
                   onChange={(event) => {
                     setPassword(event.target.value);
+
                     if (error) {
                       setError("");
                     }
@@ -586,6 +573,7 @@ export default function AdminLogin() {
                     color: blue,
                     fontSize: { xs: "12px", md: "14px" },
                     cursor: "pointer",
+
                     "&:hover": {
                       textDecoration: "underline",
                     },
@@ -627,10 +615,10 @@ export default function AdminLogin() {
                 }
                 onClick={handleLogin}
                 disabled={loading || !password.trim()}
-                bgColor={password.trim() ? Primary : "#4B5563"}
-                hoverColor={password.trim() ? Secondary : "#4B5563"}
+                bgColor={password.trim() ? Primary : loginGry}
+                hoverColor={password.trim() ? Secondary : loginGry}
                 textColor={password.trim() ? background : txtMuted}
-                borderColor={password.trim() ? Primary : "#4B5563"}
+                borderColor={password.trim() ? Primary : loginGry}
                 height="48px"
                 width="100%"
                 borderRadius="4px"
@@ -641,10 +629,12 @@ export default function AdminLogin() {
                   letterSpacing: "0.25px",
                   flexDirection: "row-reverse",
                   gap: "8px",
+
                   "& .MuiButton-startIcon": {
                     marginLeft: 0,
                     marginRight: 0,
                   },
+
                   "&.Mui-disabled": {
                     backgroundColor: loginGry,
                     color: txtMuted,
@@ -662,9 +652,7 @@ export default function AdminLogin() {
             </>
           )}
 
-          {/* ================================================= */}
           {/* SECURITY DIVIDER */}
-          {/* ================================================= */}
 
           <CustomContainer
             padding={0}
@@ -678,11 +666,7 @@ export default function AdminLogin() {
               alignItems: "center",
               justifyContent: "center",
               gap: "10px",
-
-              mt: {
-                xs: "28px",
-                md: "34px",
-              },
+              mt: { xs: "28px", md: "34px" },
             }}
           >
             <Divider
@@ -713,19 +697,10 @@ export default function AdminLogin() {
           <Typography
             sx={{
               color: txtWhite,
-
-              fontSize: {
-                xs: "14px",
-                md: "16px",
-              },
-
+              fontSize: { xs: "14px", md: "16px" },
               fontWeight: 700,
               textAlign: "center",
-
-              mt: {
-                xs: "5px",
-                md: "10px",
-              },
+              mt: { xs: "5px", md: "10px" },
             }}
           >
             Authorized administrators only
@@ -734,12 +709,7 @@ export default function AdminLogin() {
           <Typography
             sx={{
               color: txtLight,
-
-              fontSize: {
-                xs: "10px",
-                md: "12px",
-              },
-
+              fontSize: { xs: "10px", md: "12px" },
               fontWeight: 400,
               textAlign: "center",
               mt: "4px",
@@ -750,41 +720,17 @@ export default function AdminLogin() {
         </CustomContainer>
       </CustomContainer>
 
-      {/* ================================================= */}
       {/* FOOTER */}
-      {/* ================================================= */}
 
       <Box
         sx={{
-          position: {
-            xs: "relative",
-            md: "absolute",
-          },
-
-          bottom: {
-            xs: "19px",
-            md: "16px",
-          },
-
-          left: {
-            md: "50%",
-          },
-
-          transform: {
-            md: "translateX(-50%)",
-          },
-
+          position: { xs: "relative", md: "absolute" },
+          bottom: { xs: "19px", md: "16px" },
+          left: { xs: "auto", md: "50%" },
+          transform: { xs: "none", md: "translateX(-50%)" },
           zIndex: 5,
-
-          width: {
-            xs: "calc(100% - 32px)",
-            md: "620px",
-          },
-
-          mx: {
-            xs: "16px",
-            md: 0,
-          },
+          width: { xs: "calc(100% - 32px)", md: "620px" },
+          mx: { xs: "16px", md: 0 },
         }}
       >
         <Divider
@@ -797,18 +743,9 @@ export default function AdminLogin() {
         <Typography
           sx={{
             color: txtLight,
-
-            fontSize: {
-              xs: "10px",
-              md: "12px",
-            },
-
+            fontSize: { xs: "10px", md: "12px" },
             textAlign: "center",
-
-            mb: {
-              xs: "4px",
-              md: "8px",
-            },
+            mb: { xs: "4px", md: "8px" },
           }}
         >
           © 2026 The Fenestration Insider
@@ -820,22 +757,13 @@ export default function AdminLogin() {
             alignItems: "center",
             justifyContent: "center",
             flexWrap: "wrap",
-
-            gap: {
-              xs: "8px",
-              md: "12px",
-            },
+            gap: { xs: "8px", md: "12px" },
           }}
         >
           <Typography
             sx={{
               color: txtMuted,
-
-              fontSize: {
-                xs: "10px",
-                md: "12px",
-              },
-
+              fontSize: { xs: "10px", md: "12px" },
               cursor: "pointer",
 
               "&:hover": {
@@ -858,12 +786,7 @@ export default function AdminLogin() {
           <Typography
             sx={{
               color: txtMuted,
-
-              fontSize: {
-                xs: "10px",
-                md: "12px",
-              },
-
+              fontSize: { xs: "10px", md: "12px" },
               cursor: "pointer",
 
               "&:hover": {
@@ -886,12 +809,7 @@ export default function AdminLogin() {
           <Typography
             sx={{
               color: txtMuted,
-
-              fontSize: {
-                xs: "10px",
-                md: "12px",
-              },
-
+              fontSize: { xs: "10px", md: "12px" },
               cursor: "pointer",
 
               "&:hover": {
