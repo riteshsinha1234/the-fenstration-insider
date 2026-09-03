@@ -9,6 +9,7 @@
       "framework": "express"
     }
   },
+
   "rewrites": [
     {
       "source": "/api/:path*",
@@ -18,9 +19,7 @@
     },
     {
       "source": "/(.*)",
-      "destination": {
-        "service": "frontend"
-      }
+      "destination": "/index.html"
     }
   ]
 }
