@@ -4,28 +4,23 @@
       "root": ".",
       "framework": "vite"
     },
+
     "backend": {
       "root": "backend",
       "framework": "express"
     }
   },
-  "routes": [
+
+  "rewrites": [
     {
-      "src": "/api/(.*)",
-      "dest": {
+      "source": "/api/:path*",
+      "destination": {
         "service": "backend"
       }
     },
     {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/admin/.*",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/.*",
-      "dest": {
+      "source": "/:path*",
+      "destination": {
         "service": "frontend"
       }
     }
