@@ -1,5 +1,8 @@
 import { Route, Routes } from "react-router-dom";
+
 import App from "../App";
+import NotFound from "../NotFound";
+
 import AdminLogin from "../admin/AdminLogin";
 import AdminDashboard from "../admin/AdminDashboard";
 import AdminArticles from "../admin/AdminArticles";
@@ -15,30 +18,43 @@ import AdminSubmissions from "../admin/AdminSubmissions";
 import AdminMediaLibrary from "../admin/AdminMediaLibrary";
 import AdminUsers from "../admin/AdminUsers";
 import AdminSettings from "../admin/AdminSettings";
-import NotFound from "../NotFound";
+
+import ProtectedRoute from "./ProtectedRoute";
 
 export default function AppRoutes() {
   return (
     <Routes>
+      {/* PUBLIC ROUTES */}
+
       <Route path="/" element={<App />} />
       <Route path="/admin" element={<AdminLogin />} />
-      <Route path="/admin/dashboard" element={<AdminDashboard />} />
-      <Route path="/admin/articles" element={<AdminArticles />} />
-      <Route path="/admin/categories" element={<AdminCategories />} />
-      <Route path="/admin/case-studies" element={<AdminCaseStudies />} />
-      <Route path="/admin/sustainability" element={<AdminSustainability />} />
-      <Route path="/admin/facade-lab" element={<AdminFacadeLab />} />
-      <Route
-        path="/admin/industry-leaders"
-        element={<AdminIndustryLeaders />}
-      />
-      <Route path="/admin/companies" element={<AdminCompanies />} />
-      <Route path="/admin/events" element={<AdminEvents />} />
-      <Route path="/admin/newsletter" element={<AdminNewsletter />} />
-      <Route path="/admin/submissions" element={<AdminSubmissions />} />
-      <Route path="/admin/media" element={<AdminMediaLibrary />} />
-      <Route path="/admin/users" element={<AdminUsers />} />
-      <Route path="/admin/settings" element={<AdminSettings />} />
+
+      {/* PROTECTED ADMIN ROUTES */}
+
+      <Route element={<ProtectedRoute />}>
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/admin/articles" element={<AdminArticles />} />
+        <Route path="/admin/categories" element={<AdminCategories />} />
+        <Route path="/admin/case-studies" element={<AdminCaseStudies />} />
+        <Route path="/admin/sustainability" element={<AdminSustainability />} />
+        <Route path="/admin/facade-lab" element={<AdminFacadeLab />} />
+
+        <Route
+          path="/admin/industry-leaders"
+          element={<AdminIndustryLeaders />}
+        />
+
+        <Route path="/admin/companies" element={<AdminCompanies />} />
+        <Route path="/admin/events" element={<AdminEvents />} />
+        <Route path="/admin/newsletter" element={<AdminNewsletter />} />
+        <Route path="/admin/submissions" element={<AdminSubmissions />} />
+        <Route path="/admin/media" element={<AdminMediaLibrary />} />
+        <Route path="/admin/users" element={<AdminUsers />} />
+        <Route path="/admin/settings" element={<AdminSettings />} />
+      </Route>
+
+      {/* 404 */}
+
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
