@@ -82,6 +82,8 @@ export default function AdminLogin() {
         return;
       }
 
+      sessionStorage.setItem("adminAuthenticated", "true");
+
       navigate("/admin/dashboard", { replace: true });
     } catch (error) {
       console.error("Admin login error:", error);
