@@ -83,7 +83,11 @@ export default function AdminLogin() {
         },
       });
 
-      const data = await response.json();
+      const contentType = response.headers.get("content-type");
+
+      const data = contentType?.includes("application/json")
+        ? await response.json()
+        : { message: await response.text() };
 
       if (!response.ok) {
         await auth.signOut();
@@ -93,13 +97,9 @@ export default function AdminLogin() {
           message: data.message,
         });
 
-        setError(
-          data.message || "You are not authorized to access the admin portal.",
-        );
-
+        setError(data.message || "Unable to verify admin account.");
         return;
       }
-
       navigate("/admin/dashboard", { replace: true });
     } catch (error) {
       console.error("Admin login error:", error);
