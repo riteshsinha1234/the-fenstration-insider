@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { TopBar } from "./components/TopBar";
 import { HeaderMarquee } from "./components/HeaderMarquee";
 import { Masthead } from "./components/Masthead";
@@ -23,22 +23,151 @@ import {
   MARKET_INDICES,
   INDUSTRY_LEADERS,
 } from "./data/fenestrationData";
+
 import { Article, CategoryType, IndustryLeader, MarketItem } from "./types";
-import { Bookmark, X, ArrowRight, Trash2 } from "lucide-react";
+import { Bookmark, X, Trash2 } from "lucide-react";
 
 export default function App() {
   const [currentEdition, setCurrentEdition] = useState<string>("Global");
   const [selectedCategory, setSelectedCategory] = useState<CategoryType>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
+
   const [themeMode, setThemeMode] = useState<"light" | "dark" | "blueprint">(
     "light",
   );
   const [fontSize, setFontSize] = useState<"sm" | "base" | "lg">("base");
+  // Backend published articles
+  const [articles, setArticles] = useState<Article[]>([]);
+  // Loading state for articles
+  const [articlesLoading, setArticlesLoading] = useState<boolean>(true);
+  // Fetch published articles from backend
+  useEffect(() => {
+    const fetchPublishedArticles = async () => {
+      try {
+        setArticlesLoading(true);
+
+        const response = await fetch(
+          "http://localhost:5000/api/articles/published",
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          console.error("Failed to fetch published articles:", data);
+          return;
+        }
+
+        const formattedArticles: Article[] = (data.articles || []).map(
+          (article: any) => {
+            let articleDate = "";
+
+            if (article.createdAt?._seconds) {
+              articleDate = new Date(
+                article.createdAt._seconds * 1000,
+              ).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              });
+            } else if (typeof article.createdAt === "string") {
+              articleDate = new Date(article.createdAt).toLocaleDateString(
+                "en-US",
+                {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                },
+              );
+            } else {
+              articleDate = new Date().toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              });
+            }
+
+            /*
+              Your current backend article has category: "News".
+
+              CategoryType does not currently contain "News",
+              so for now we map unknown categories to "all".
+
+              Later we can improve category handling separately.
+            */
+            const allowedCategories: CategoryType[] = [
+              "facades",
+              "windows-doors",
+              "glass-glazing",
+              "hardware-automation",
+              "sustainability",
+              "market-prices",
+              "projects",
+              "interviews",
+            ];
+
+            const normalizedCategory = String(
+              article.category || "",
+            ).toLowerCase();
+
+            const safeCategory: CategoryType = allowedCategories.includes(
+              normalizedCategory as CategoryType,
+            )
+              ? (normalizedCategory as CategoryType)
+              : "all";
+
+            return {
+              id: article.id || "",
+              title: article.title || "",
+              subtitle: "",
+              excerpt: article.excerpt || "",
+              content: article.content || "",
+              category: safeCategory,
+              categoryLabel:
+                article.categoryLabel || article.category || "Article",
+
+              author: {
+                name: article.authorName || "Fenestration Insider",
+                role: "",
+                avatar: "",
+                organization: "",
+              },
+              date: articleDate,
+              readTime: article.readTime || "",
+              imageUrl:
+                "https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1600&q=80",
+              imageCaption: "",
+              tags: [],
+              isBreaking: false,
+              isFeatured: Boolean(article.featured),
+              isEditorChoice: false,
+              isTrending: false,
+              views: 0,
+              commentsCount: 0,
+              techSpecs: [],
+              keyTakeaways: [],
+              pdfDownloadUrl: "",
+            };
+          },
+        );
+
+        console.log("Published articles:", formattedArticles);
+
+        setArticles(formattedArticles);
+      } catch (error) {
+        console.error("Fetch published articles error:", error);
+      } finally {
+        setArticlesLoading(false);
+      }
+    };
+
+    fetchPublishedArticles();
+  }, []);
 
   // Bookmarks state with localStorage persistence
   const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(() => {
     try {
       const saved = localStorage.getItem("fenestration_bookmarks");
+
       return saved ? new Set(JSON.parse(saved)) : new Set(["art-1", "art-2"]);
     } catch {
       return new Set(["art-1", "art-2"]);
@@ -47,18 +176,24 @@ export default function App() {
 
   // Modals state
   const [activeArticle, setActiveArticle] = useState<Article | null>(null);
+
   const [activeLeader, setActiveLeader] = useState<IndustryLeader | null>(null);
+
   const [activeMarketItem, setActiveMarketItem] = useState<MarketItem | null>(
     null,
   );
+
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState<boolean>(false);
+
   const [isBookmarksModalOpen, setIsBookmarksModalOpen] =
     useState<boolean>(false);
 
   // Sync dark/blueprint classes on document html
   useEffect(() => {
     const root = document.documentElement;
+
     root.classList.remove("dark", "blueprint-theme");
+
     if (themeMode === "dark") {
       root.classList.add("dark");
     } else if (themeMode === "blueprint") {
@@ -70,11 +205,13 @@ export default function App() {
   const toggleBookmark = (articleId: string) => {
     setBookmarkedIds((prev) => {
       const next = new Set(prev);
+
       if (next.has(articleId)) {
         next.delete(articleId);
       } else {
         next.add(articleId);
       }
+
       try {
         localStorage.setItem(
           "fenestration_bookmarks",
@@ -83,14 +220,42 @@ export default function App() {
       } catch (e) {
         // Fallback
       }
+
       return next;
     });
   };
 
+  /*
+    OLD STATIC VERSION:
+
+    const handleSelectArticleById = (articleId: string) => {
+      const found =
+        FEATURED_ARTICLES.find((a) => a.id === articleId) ||
+        FEATURED_ARTICLES[0];
+
+      setActiveArticle(found);
+    };
+  */
+
   const handleSelectArticleById = (articleId: string) => {
-    const found =
-      FEATURED_ARTICLES.find((a) => a.id === articleId) || FEATURED_ARTICLES[0];
-    setActiveArticle(found);
+    const found = articles.find((article) => article.id === articleId);
+
+    if (found) {
+      setActiveArticle(found);
+      return;
+    }
+
+    /*
+      Temporary fallback so your existing HeaderMarquee
+      with art-1 / art-2 etc. still works.
+    */
+    const staticArticle = FEATURED_ARTICLES.find(
+      (article) => article.id === articleId,
+    );
+
+    if (staticArticle) {
+      setActiveArticle(staticArticle);
+    }
   };
 
   // Font size scale class
@@ -100,16 +265,23 @@ export default function App() {
     lg: "text-lg",
   }[fontSize];
 
-  // Bookmarked articles list
-  const savedArticles = FEATURED_ARTICLES.filter((a) =>
-    bookmarkedIds.has(a.id),
+  /*
+    OLD STATIC BOOKMARK LIST:
+
+    const savedArticles = FEATURED_ARTICLES.filter((a) =>
+      bookmarkedIds.has(a.id),
+    );
+  */
+
+  const savedArticles = articles.filter((article) =>
+    bookmarkedIds.has(article.id),
   );
 
   return (
     <div
       className={`min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans transition-colors duration-200 ${fontSizeClass}`}
     >
-      {/* 1. TOP UTILITY BAR (Date, Editions, Time, Themes, Saved articles counter) */}
+      {/* 1. TOP UTILITY BAR */}
       <TopBar
         currentEdition={currentEdition}
         onSelectEdition={setCurrentEdition}
@@ -122,7 +294,7 @@ export default function App() {
         onChangeFontSize={setFontSize}
       />
 
-      {/* 2. TOP HEADER BREAKING NEWS MARQUEE (Properly placed at top header, smooth pace, pause-on-hover) */}
+      {/* 2. TOP HEADER BREAKING NEWS MARQUEE */}
       <HeaderMarquee onSelectArticle={handleSelectArticleById} />
 
       {/* 3. MASTHEAD BRANDING & SEARCH BAR */}
@@ -131,11 +303,17 @@ export default function App() {
         onSearchChange={setSearchQuery}
         onOpenDigitalIssue={() => {
           const el = document.getElementById("digital-magazine");
-          el?.scrollIntoView({ behavior: "smooth" });
+
+          el?.scrollIntoView({
+            behavior: "smooth",
+          });
         }}
         onOpenCalculator={() => {
           const el = document.getElementById("performance-lab");
-          el?.scrollIntoView({ behavior: "smooth" });
+
+          el?.scrollIntoView({
+            behavior: "smooth",
+          });
         }}
         onOpenNewsletter={() => {
           window.scrollTo({
@@ -145,7 +323,10 @@ export default function App() {
         }}
         onOpenEvents={() => {
           const el = document.getElementById("events-calendar");
-          el?.scrollIntoView({ behavior: "smooth" });
+
+          el?.scrollIntoView({
+            behavior: "smooth",
+          });
         }}
       />
 
@@ -155,19 +336,31 @@ export default function App() {
         onSelectCategory={setSelectedCategory}
         onOpenEvents={() => {
           const el = document.getElementById("events-calendar");
-          el?.scrollIntoView({ behavior: "smooth" });
+
+          el?.scrollIntoView({
+            behavior: "smooth",
+          });
         }}
         onOpenDirectory={() => {
           const el = document.getElementById("directory-section");
-          el?.scrollIntoView({ behavior: "smooth" });
+
+          el?.scrollIntoView({
+            behavior: "smooth",
+          });
         }}
         onOpenProjects={() => {
           const el = document.getElementById("projects-section");
-          el?.scrollIntoView({ behavior: "smooth" });
+
+          el?.scrollIntoView({
+            behavior: "smooth",
+          });
         }}
         onOpenCalculator={() => {
           const el = document.getElementById("performance-lab");
-          el?.scrollIntoView({ behavior: "smooth" });
+
+          el?.scrollIntoView({
+            behavior: "smooth",
+          });
         }}
         onOpenLeaders={() => {
           setActiveLeader(INDUSTRY_LEADERS[0]);
@@ -177,30 +370,67 @@ export default function App() {
         }}
       />
 
-      {/* 5. SLOW MARKET & COMMODITY PRICES MARQUEE (LME Aluminium, Float Glass, Low-E, PVB, PA6.6) */}
+      {/* 5. MARKET MARQUEE */}
       <MarketMarquee onSelectMarketItem={(item) => setActiveMarketItem(item)} />
 
-      {/* 6. SLOW INDUSTRIAL LEADERS MARQUEE (Schüco, Reynaers, Saint-Gobain, Guardian, Roto, Kuraray, Fenesta) */}
+      {/* 6. INDUSTRY LEADERS MARQUEE */}
       <IndustryLeadersMarquee
         onSelectLeader={(leader) => setActiveLeader(leader)}
       />
 
       <main>
-        {/* 7. HERO EDITORIAL GRID (Cover Story with High-Res Glass Facade + 3 Trending Stories) */}
-        <HeroEditorial
-          leadArticle={FEATURED_ARTICLES[0]}
-          secondaryArticles={FEATURED_ARTICLES.slice(1, 4)}
-          onSelectArticle={(art) => setActiveArticle(art)}
-          bookmarkedIds={bookmarkedIds}
-          onToggleBookmark={toggleBookmark}
-        />
+        {/*
+          OLD STATIC HERO:
 
-        {/* 8. FAÇADE PERFORMANCE LAB & GLASS PHYSICS U-VALUE CALCULATOR */}
+          <HeroEditorial
+            leadArticle={FEATURED_ARTICLES[0]}
+            secondaryArticles={FEATURED_ARTICLES.slice(1, 4)}
+            onSelectArticle={(art) => setActiveArticle(art)}
+            bookmarkedIds={bookmarkedIds}
+            onToggleBookmark={toggleBookmark}
+          />
+        */}
+
+        {/* Backend Hero */}
+        {articles.length > 0 && (
+          <HeroEditorial
+            leadArticle={articles[0]}
+            secondaryArticles={articles.slice(1, 4)}
+            onSelectArticle={(art) => setActiveArticle(art)}
+            bookmarkedIds={bookmarkedIds}
+            onToggleBookmark={toggleBookmark}
+          />
+        )}
+
+        {/* Temporary loading text */}
+        {articlesLoading && (
+          <div className="flex items-center justify-center min-h-[300px] px-4">
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              Loading published articles...
+            </p>
+          </div>
+        )}
+
+        {/* 8. FAÇADE PERFORMANCE LAB */}
         <FacadePerformanceLab />
 
-        {/* 9. MAIN EDITORIAL ARTICLE GRID (Categories, Search, Grid/List view, Sorting) */}
+        {/*
+          OLD STATIC GRID:
+
+          <ArticleGrid
+            articles={FEATURED_ARTICLES}
+            selectedCategory={selectedCategory}
+            onSelectCategory={setSelectedCategory}
+            onSelectArticle={(art) => setActiveArticle(art)}
+            bookmarkedIds={bookmarkedIds}
+            onToggleBookmark={toggleBookmark}
+            searchQuery={searchQuery}
+          />
+        */}
+
+        {/* Backend Article Grid */}
         <ArticleGrid
-          articles={FEATURED_ARTICLES}
+          articles={articles}
           selectedCategory={selectedCategory}
           onSelectCategory={setSelectedCategory}
           onSelectArticle={(art) => setActiveArticle(art)}
@@ -212,37 +442,49 @@ export default function App() {
         {/* 10. ARCHITECTURAL FAÇADE BIM & PROJECT CASE STUDIES */}
         <ProjectShowcase />
 
-        {/* 11. DIGITAL MAGAZINE EDITION ARCHIVE & E-READER */}
+        {/* 11. DIGITAL MAGAZINE */}
         <DigitalMagazineSection />
 
-        {/* 12. UPCOMING GLOBAL TRADE FAIRS & EXPOS (Zak Doors & Windows, Fensterbau Frontale, Glasstec, GlassBuild) */}
+        {/* 12. EVENTS */}
         <EventsCalendar />
 
-        {/* 13. VERIFIED SUPPLIER & VENDOR DIRECTORY */}
+        {/* 13. DIRECTORY */}
         <DirectorySection />
       </main>
 
-      {/* 14. COMPREHENSIVE EDITORIAL JOURNAL FOOTER */}
+      {/* 14. FOOTER */}
       <Footer
         onOpenDigitalIssue={() => {
           const el = document.getElementById("digital-magazine");
-          el?.scrollIntoView({ behavior: "smooth" });
+
+          el?.scrollIntoView({
+            behavior: "smooth",
+          });
         }}
         onOpenCalculator={() => {
           const el = document.getElementById("performance-lab");
-          el?.scrollIntoView({ behavior: "smooth" });
+
+          el?.scrollIntoView({
+            behavior: "smooth",
+          });
         }}
         onOpenEvents={() => {
           const el = document.getElementById("events-calendar");
-          el?.scrollIntoView({ behavior: "smooth" });
+
+          el?.scrollIntoView({
+            behavior: "smooth",
+          });
         }}
         onOpenDirectory={() => {
           const el = document.getElementById("directory-section");
-          el?.scrollIntoView({ behavior: "smooth" });
+
+          el?.scrollIntoView({
+            behavior: "smooth",
+          });
         }}
       />
 
-      {/* MODAL 1: FULL ARTICLE READER */}
+      {/* MODAL 1 */}
       <ArticleModal
         article={activeArticle}
         onClose={() => setActiveArticle(null)}
@@ -252,35 +494,37 @@ export default function App() {
         onToggleBookmark={toggleBookmark}
       />
 
-      {/* MODAL 2: INDUSTRY LEADER PROFILE */}
+      {/* MODAL 2 */}
       <LeaderModal
         leader={activeLeader}
         onClose={() => setActiveLeader(null)}
       />
 
-      {/* MODAL 3: COMMODITY MARKET DETAIL */}
+      {/* MODAL 3 */}
       <MarketModal
         item={activeMarketItem}
         onClose={() => setActiveMarketItem(null)}
       />
 
-      {/* MODAL 4: SUBMIT PRESS RELEASE */}
+      {/* MODAL 4 */}
       <SubmitPressReleaseModal
         isOpen={isSubmitModalOpen}
         onClose={() => setIsSubmitModalOpen(false)}
       />
 
-      {/* MODAL 5: BOOKMARKS SCRAPBOOK */}
+      {/* MODAL 5 */}
       {isBookmarksModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-xs p-4 flex items-center justify-center animate-in fade-in">
           <div className="bg-white dark:bg-slate-900 rounded-sm max-w-xl w-full border border-slate-200 dark:border-slate-800 shadow-2xl p-6 overflow-hidden">
             <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 mb-4">
               <div className="flex items-center gap-2">
                 <Bookmark className="w-4 h-4 text-amber-500 fill-current" />
+
                 <h3 className="font-black uppercase tracking-wider text-base text-slate-900 dark:text-white">
                   Saved Technical Papers ({savedArticles.length})
                 </h3>
               </div>
+
               <button
                 onClick={() => setIsBookmarksModalOpen(false)}
                 className="p-1 rounded-sm text-slate-400 hover:text-slate-600 dark:hover:text-white"
@@ -311,9 +555,11 @@ export default function App() {
                       <span className="text-[9px] font-black bg-amber-500 text-slate-950 uppercase px-1.5 py-0.5 rounded-sm">
                         {art.categoryLabel}
                       </span>
+
                       <h4 className="font-bold text-slate-900 dark:text-white line-clamp-1 hover:text-amber-600 dark:hover:text-amber-400 mt-1">
                         {art.title}
                       </h4>
+
                       <span className="text-[10px] text-slate-400 font-mono">
                         {art.readTime} • By {art.author.name}
                       </span>

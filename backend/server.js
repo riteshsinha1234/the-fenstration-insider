@@ -3,40 +3,20 @@ const cors = require("cors");
 require("dotenv").config();
 
 const authRoutes = require("./src/auth/routes");
+const articleRoutes = require("./src/articles/routes");
 
 const app = express();
 
-app.use(
-  cors({
-    origin: true,
-    credentials: true,
-  }),
-);
-
+app.use(cors());
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.status(200).json({
-    status: "success",
-    message: "Fenestration Insider backend is running",
-  });
-});
-
-app.get("/api", (req, res) => {
-  res.status(200).json({
-    status: "success",
-    message: "Fenestration Insider backend is running",
-  });
-});
-
 app.use("/api/auth", authRoutes);
+app.use("/api/articles", articleRoutes);
 
 const PORT = process.env.PORT || 5000;
 
-if (require.main === module) {
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
-}
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
 
 module.exports = app;
