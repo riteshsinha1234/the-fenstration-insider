@@ -18,13 +18,22 @@ import LogoutOutlined from "@mui/icons-material/LogoutOutlined";
 
 import {
   Primary,
+  Secondary,
   background,
   borderColor,
   orangeGlow,
+  red,
   txtLight,
   txtMuted,
   txtWhite,
+  white,
 } from "../Colors";
+import CustomButton from "../CustomButton";
+import { useState } from "react";
+import AdminDialog from "./AdminDialog";
+
+import { auth } from "@/backend/src/firebase";
+import { signOut } from "firebase/auth";
 
 type SidebarItem = {
   label: string;
@@ -109,6 +118,23 @@ export default function AdminSidebar() {
   const navigate = useNavigate();
   const location = useLocation();
   const pathname = location.pathname;
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
+  const [logoutLoading, setLogoutLoading] = useState(false);
+
+  const handleLogout = async () => {
+    try {
+      setLogoutLoading(true);
+
+      await signOut(auth);
+
+      setLogoutDialogOpen(false);
+      navigate("/admin", { replace: true });
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      setLogoutLoading(false);
+    }
+  };
 
   const handleNavigation = (path: string) => {
     navigate(path);
@@ -261,37 +287,41 @@ export default function AdminSidebar() {
       </Box>
 
       {/* LOGOUT */}
-      <Box
+      <CustomButton
+        text="Logout"
+        icon={<LogoutOutlined />}
+        onClick={() => setLogoutDialogOpen(true)}
+        bgColor={Secondary}
+        textColor={white}
+        borderColor={orangeGlow}
+        width="calc(100% - 28px)"
+        height="38px"
+        borderRadius="6px"
+        fontWeight={700}
+        iconSize="20px"
         sx={{
+          mx: "14px",
+          mb: "20px",
           px: { xs: "16px", md: "20px" },
-          py: { xs: "18px", md: "22px" },
-          display: "flex",
-          alignItems: "center",
-          gap: "14px",
-          cursor: "pointer",
-          flexShrink: 0,
+          justifyContent: "center",
+          fontSize: { xs: "12px", md: "16px" },
+          gap: "10px",
+          boxShadow: "0 4px 14px rgba(211, 47, 47, 0.18)",
+          "& .MuiButton-startIcon": {
+            marginLeft: 0,
+            marginRight: 0,
+          },
           "&:hover": {
-            backgroundColor: "rgba(255,255,255,0.03)",
+            boxShadow: "0 5px 18px rgba(211, 47, 47, 0.28)",
           },
         }}
-      >
-        <LogoutOutlined
-          sx={{
-            color: txtLight,
-            fontSize: { xs: "22px", md: "26px" },
-          }}
-        />
-        <Typography
-          sx={{
-            color: txtWhite,
-            fontSize: { xs: "13px", md: "15px" },
-
-            fontWeight: 600,
-          }}
-        >
-          Logout
-        </Typography>
-      </Box>
+      />
+      <AdminDialog
+        open={logoutDialogOpen}
+        loading={logoutLoading}
+        onClose={() => setLogoutDialogOpen(false)}
+        onConfirm={handleLogout}
+      />
     </Box>
   );
 }

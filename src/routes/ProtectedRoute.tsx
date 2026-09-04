@@ -7,17 +7,44 @@ import { auth } from "@/backend/src/firebase";
 import { Primary, background } from "../components/Colors";
 
 export default function ProtectedRoute() {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setIsAuthenticated(Boolean(user));
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        setIsAuthorized(false);
+        return;
+      }
+
+      try {
+        const token = await user.getIdToken();
+
+        const response = await fetch("/api/auth/verify", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          await auth.signOut();
+          setIsAuthorized(false);
+          return;
+        }
+
+        setIsAuthorized(true);
+      } catch (error) {
+        console.error("Admin authorization error:", error);
+
+        await auth.signOut();
+        setIsAuthorized(false);
+      }
     });
 
     return () => unsubscribe();
   }, []);
 
-  if (isAuthenticated === null) {
+  if (isAuthorized === null) {
     return (
       <Box
         sx={{
@@ -39,7 +66,7 @@ export default function ProtectedRoute() {
     );
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthorized) {
     return <Navigate to="/admin" replace />;
   }
 
