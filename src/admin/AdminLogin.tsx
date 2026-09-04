@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
-
 import { Box, Divider, Typography } from "@mui/material";
 import EmailOutlined from "@mui/icons-material/EmailOutlined";
 import LockOutlined from "@mui/icons-material/LockOutlined";
@@ -77,7 +76,7 @@ export default function AdminLogin() {
 
       const token = await userCredential.user.getIdToken();
 
-      const response = await fetch("http://localhost:5000/api/auth/verify", {
+      const response = await fetch("/api/auth/verify", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
