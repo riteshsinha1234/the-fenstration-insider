@@ -109,18 +109,15 @@ export default function AllAdminArticle({
     try {
       setUpdatingArticleId(articleId);
 
-      const response = await fetch(
-        `http://localhost:5000/api/articles/${articleId}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            status: newStatus,
-          }),
+      const response = await fetch(`/api/articles/${articleId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify({
+          status: newStatus,
+        }),
+      });
 
       const data = await response.json();
 
