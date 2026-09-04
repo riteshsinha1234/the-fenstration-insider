@@ -87,16 +87,28 @@ export default function AdminLogin() {
 
       if (!response.ok) {
         await auth.signOut();
+
+        console.error("Admin verification failed:", {
+          status: response.status,
+          message: data.message,
+        });
+
         setError(
           data.message || "You are not authorized to access the admin portal.",
         );
+
         return;
       }
 
-      navigate("/admin/dashboard");
+      navigate("/admin/dashboard", { replace: true });
     } catch (error) {
       console.error("Admin login error:", error);
-      setError("Invalid admin email or password.");
+
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("Unable to sign in.");
+      }
     } finally {
       setLoading(false);
     }
