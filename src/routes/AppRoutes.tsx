@@ -15,6 +15,7 @@ import AdminSubmissions from "../admin/AdminSubmissions";
 import AdminMediaLibrary from "../admin/AdminMediaLibrary";
 import AdminUsers from "../admin/AdminUsers";
 import AdminSettings from "../admin/AdminSettings";
+import NotFound from "../NotFound";
 
 export default function AppRoutes() {
   return (
@@ -38,6 +39,7 @@ export default function AppRoutes() {
       <Route path="/admin/media" element={<AdminMediaLibrary />} />
       <Route path="/admin/users" element={<AdminUsers />} />
       <Route path="/admin/settings" element={<AdminSettings />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }
