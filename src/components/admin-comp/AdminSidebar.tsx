@@ -124,11 +124,11 @@ export default function AdminSidebar() {
   const handleLogout = async () => {
     try {
       setLogoutLoading(true);
-
-      await signOut(auth);
-
+      sessionStorage.removeItem("adminAuthenticated");
       setLogoutDialogOpen(false);
-      navigate("/admin", { replace: true });
+      navigate("/admin", {
+        replace: true,
+      });
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
