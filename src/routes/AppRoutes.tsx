@@ -24,12 +24,8 @@ import ProtectedRoute from "./ProtectedRoute";
 export default function AppRoutes() {
   return (
     <Routes>
-      {/* PUBLIC ROUTES */}
-
       <Route path="/" element={<App />} />
       <Route path="/admin" element={<AdminLogin />} />
-
-      {/* PROTECTED ADMIN ROUTES */}
 
       <Route element={<ProtectedRoute />}>
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
@@ -38,12 +34,10 @@ export default function AppRoutes() {
         <Route path="/admin/case-studies" element={<AdminCaseStudies />} />
         <Route path="/admin/sustainability" element={<AdminSustainability />} />
         <Route path="/admin/facade-lab" element={<AdminFacadeLab />} />
-
         <Route
           path="/admin/industry-leaders"
           element={<AdminIndustryLeaders />}
         />
-
         <Route path="/admin/companies" element={<AdminCompanies />} />
         <Route path="/admin/events" element={<AdminEvents />} />
         <Route path="/admin/newsletter" element={<AdminNewsletter />} />
@@ -53,9 +47,8 @@ export default function AppRoutes() {
         <Route path="/admin/settings" element={<AdminSettings />} />
       </Route>
 
-      {/* 404 */}
-
       <Route path="*" element={<NotFound />} />
+      {/* 404 */}
     </Routes>
   );
 }
