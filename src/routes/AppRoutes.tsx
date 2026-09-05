@@ -1,8 +1,6 @@
 import { Route, Routes } from "react-router-dom";
-
 import App from "../App";
 import NotFound from "../NotFound";
-
 import AdminLogin from "../admin/AdminLogin";
 import AdminDashboard from "../admin/AdminDashboard";
 import AdminArticles from "../admin/AdminArticles";

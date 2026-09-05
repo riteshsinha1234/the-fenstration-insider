@@ -15,14 +15,12 @@ import ImageOutlined from "@mui/icons-material/ImageOutlined";
 import PeopleOutlineOutlined from "@mui/icons-material/PeopleOutlineOutlined";
 import SettingsOutlined from "@mui/icons-material/SettingsOutlined";
 import LogoutOutlined from "@mui/icons-material/LogoutOutlined";
-
 import {
   Primary,
   Secondary,
   background,
   borderColor,
   orangeGlow,
-  red,
   txtLight,
   txtMuted,
   txtWhite,
@@ -31,8 +29,7 @@ import {
 import CustomButton from "../CustomButton";
 import { useState } from "react";
 import AdminDialog from "./AdminDialog";
-
-import { auth } from "@/backend/src/firebase";
+import { auth } from "../../config/firebase";
 import { signOut } from "firebase/auth";
 
 type SidebarItem = {

@@ -17,6 +17,7 @@ import { LeaderModal } from "./components/LeaderModal";
 import { MarketModal } from "./components/MarketModal";
 import { SubmitPressReleaseModal } from "./components/SubmitPressReleaseModal";
 import { Footer } from "./components/Footer";
+import { API_BASE_URL } from "./config/api";
 
 import {
   FEATURED_ARTICLES,
@@ -40,15 +41,14 @@ export default function App() {
   const [articles, setArticles] = useState<Article[]>([]);
   // Loading state for articles
   const [articlesLoading, setArticlesLoading] = useState<boolean>(true);
+
   // Fetch published articles from backend
   useEffect(() => {
     const fetchPublishedArticles = async () => {
       try {
         setArticlesLoading(true);
 
-        const response = await fetch(
-          "http://localhost:5000/api/articles/published",
-        );
+        const response = await fetch(`${API_BASE_URL}/articles/published`);
 
         const data = await response.json();
 
@@ -69,15 +69,6 @@ export default function App() {
                 month: "long",
                 day: "numeric",
               });
-            } else if (typeof article.createdAt === "string") {
-              articleDate = new Date(article.createdAt).toLocaleDateString(
-                "en-US",
-                {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                },
-              );
             } else {
               articleDate = new Date().toLocaleDateString("en-US", {
                 year: "numeric",
@@ -86,14 +77,6 @@ export default function App() {
               });
             }
 
-            /*
-              Your current backend article has category: "News".
-
-              CategoryType does not currently contain "News",
-              so for now we map unknown categories to "all".
-
-              Later we can improve category handling separately.
-            */
             const allowedCategories: CategoryType[] = [
               "facades",
               "windows-doors",
@@ -131,10 +114,13 @@ export default function App() {
                 avatar: "",
                 organization: "",
               },
+
               date: articleDate,
               readTime: article.readTime || "",
+
               imageUrl:
                 "https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1600&q=80",
+
               imageCaption: "",
               tags: [],
               isBreaking: false,
@@ -149,8 +135,6 @@ export default function App() {
             };
           },
         );
-
-        console.log("Published articles:", formattedArticles);
 
         setArticles(formattedArticles);
       } catch (error) {

@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { Box, CircularProgress } from "@mui/material";
-
-import { auth } from "@/backend/src/firebase";
+import { auth } from "../config/firebase";
+import { API_BASE_URL } from "../config/api";
 import { Primary, background } from "../components/Colors";
 
 export default function ProtectedRoute() {
@@ -19,7 +19,7 @@ export default function ProtectedRoute() {
       try {
         const token = await user.getIdToken();
 
-        const response = await fetch("/api/auth/verify", {
+        const response = await fetch(`${API_BASE_URL}/auth/verify`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
