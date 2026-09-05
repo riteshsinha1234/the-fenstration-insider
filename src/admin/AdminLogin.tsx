@@ -6,7 +6,6 @@ import EmailOutlined from "@mui/icons-material/EmailOutlined";
 import LockOutlined from "@mui/icons-material/LockOutlined";
 import ArrowForward from "@mui/icons-material/ArrowForward";
 import AdminPanelSettingsOutlined from "@mui/icons-material/AdminPanelSettingsOutlined";
-import CustomButton from "../components/CustomButton";
 import CustomTextField from "../components/CustomTextField";
 import CustomContainer from "../components/CustomContainer";
 
@@ -23,7 +22,9 @@ import {
   red,
   loginGry,
 } from "../components/Colors";
-import { auth } from "@/backend/src/firebase";
+import { auth } from "../config/firebase";
+import { API_BASE_URL } from "../config/api";
+import ImageButton from "../components/ImageButton";
 
 export default function AdminLogin() {
   const navigate = useNavigate();
@@ -76,7 +77,7 @@ export default function AdminLogin() {
 
       const token = await userCredential.user.getIdToken();
 
-      const response = await fetch("/api/auth/verify", {
+      const response = await fetch(`${API_BASE_URL}/auth/verify`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -396,15 +397,10 @@ export default function AdminLogin() {
 
               {/* CONTINUE BUTTON */}
 
-              <CustomButton
+              <ImageButton
                 text="CONTINUE"
-                icon={
-                  <ArrowForward
-                    sx={{
-                      fontSize: "22px",
-                    }}
-                  />
-                }
+                icon={<ArrowForward sx={{ fontSize: "22px" }} />}
+                position="right"
                 onClick={handleContinue}
                 disabled={!isValidEmail}
                 bgColor={isValidEmail ? Primary : loginGry}
@@ -416,28 +412,19 @@ export default function AdminLogin() {
                 borderRadius="4px"
                 fontSize="16px"
                 fontWeight={800}
+                gap="8px"
                 sx={{
                   mt: "20px",
                   letterSpacing: "0.25px",
-                  flexDirection: "row-reverse",
-                  gap: "8px",
-
-                  "& .MuiButton-startIcon": {
-                    marginLeft: 0,
-                    marginRight: 0,
-                  },
-
                   "&.Mui-disabled": {
                     backgroundColor: loginGry,
                     color: txtMuted,
                     borderColor: loginGry,
                     opacity: 1,
                   },
-
                   "&:hover": {
                     transform: isValidEmail ? "translateY(-1px)" : "none",
                   },
-
                   transition: "background-color 0.2s ease, transform 0.2s ease",
                 }}
               />
@@ -612,18 +599,10 @@ export default function AdminLogin() {
               )}
 
               {/* LOGIN BUTTON */}
-
-              <CustomButton
+              <ImageButton
                 text={loading ? "SIGNING IN..." : "SIGN IN TO ADMIN PORTAL"}
-                icon={
-                  !loading ? (
-                    <ArrowForward
-                      sx={{
-                        fontSize: "22px",
-                      }}
-                    />
-                  ) : null
-                }
+                icon={<ArrowForward sx={{ fontSize: "22px" }} />}
+                position="right"
                 onClick={handleLogin}
                 disabled={loading || !password.trim()}
                 bgColor={password.trim() ? Primary : loginGry}
@@ -635,28 +614,20 @@ export default function AdminLogin() {
                 borderRadius="4px"
                 fontSize="16px"
                 fontWeight={800}
+                gap="8px"
                 sx={{
                   mt: "10px",
                   letterSpacing: "0.25px",
-                  flexDirection: "row-reverse",
-                  gap: "8px",
-
-                  "& .MuiButton-startIcon": {
-                    marginLeft: 0,
-                    marginRight: 0,
-                  },
-
                   "&.Mui-disabled": {
-                    backgroundColor: loginGry,
-                    color: txtMuted,
-                    borderColor: loginGry,
+                    backgroundColor: password.trim() ? Primary : loginGry,
+                    color: password.trim() ? background : txtMuted,
+                    borderColor: password.trim() ? Primary : loginGry,
                     opacity: 1,
                   },
-
                   "&:hover": {
-                    transform: password.trim() ? "translateY(-1px)" : "none",
+                    transform:
+                      password.trim() && !loading ? "translateY(-1px)" : "none",
                   },
-
                   transition: "background-color 0.2s ease, transform 0.2s ease",
                 }}
               />
