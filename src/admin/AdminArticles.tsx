@@ -148,7 +148,7 @@ export default function AdminArticles() {
     try {
       setArticlesLoading(true);
 
-      const response = await fetch("/api/articles");
+      const response = await fetch("http://localhost:5000/api/articles");
 
       const data = await response.json();
 
@@ -229,7 +229,7 @@ export default function AdminArticles() {
       setError("");
       setSuccess("");
 
-      const response = await fetch("/api/articles", {
+      const response = await fetch("http://localhost:5000/api/articles", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -245,6 +245,7 @@ export default function AdminArticles() {
           featured,
         }),
       });
+
       const data = await response.json();
 
       if (!response.ok) {

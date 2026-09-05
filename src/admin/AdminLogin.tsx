@@ -1,13 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { Box, Divider, Typography } from "@mui/material";
-
 import EmailOutlined from "@mui/icons-material/EmailOutlined";
 import LockOutlined from "@mui/icons-material/LockOutlined";
 import ArrowForward from "@mui/icons-material/ArrowForward";
 import AdminPanelSettingsOutlined from "@mui/icons-material/AdminPanelSettingsOutlined";
-
 import CustomButton from "../components/CustomButton";
 import CustomTextField from "../components/CustomTextField";
 import CustomContainer from "../components/CustomContainer";
@@ -25,20 +23,16 @@ import {
   red,
   loginGry,
 } from "../components/Colors";
+import { auth } from "@/backend/src/firebase";
 
 export default function AdminLogin() {
   const navigate = useNavigate();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState<"email" | "password">("email");
-
   const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
-
-  const ADMIN_EMAIL = "fenestration@gmail.com";
-  const ADMIN_PASSWORD = "fenestration@12345";
 
   // CONTINUE AFTER EMAIL
   const handleContinue = () => {
@@ -63,7 +57,7 @@ export default function AdminLogin() {
     setError("");
   };
 
-  // TEMPORARY LOGIN
+  // LOGIN
   const handleLogin = async () => {
     if (!password.trim()) {
       setError("Please enter your password.");
@@ -74,20 +68,47 @@ export default function AdminLogin() {
       setLoading(true);
       setError("");
 
-      if (
-        email.trim().toLowerCase() !== ADMIN_EMAIL.toLowerCase() ||
-        password !== ADMIN_PASSWORD
-      ) {
-        setError("Invalid admin email or password.");
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email.trim(),
+        password,
+      );
+
+      const token = await userCredential.user.getIdToken();
+
+      const response = await fetch("/api/auth/verify", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const contentType = response.headers.get("content-type");
+
+      const data = contentType?.includes("application/json")
+        ? await response.json()
+        : { message: await response.text() };
+
+      if (!response.ok) {
+        await auth.signOut();
+
+        console.error("Admin verification failed:", {
+          status: response.status,
+          message: data.message,
+        });
+
+        setError(data.message || "Unable to verify admin account.");
         return;
       }
-
-      sessionStorage.setItem("adminAuthenticated", "true");
-
       navigate("/admin/dashboard", { replace: true });
     } catch (error) {
       console.error("Admin login error:", error);
-      setError("Unable to sign in.");
+
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("Unable to sign in.");
+      }
     } finally {
       setLoading(false);
     }
@@ -377,7 +398,13 @@ export default function AdminLogin() {
 
               <CustomButton
                 text="CONTINUE"
-                icon={<ArrowForward sx={{ fontSize: "22px" }} />}
+                icon={
+                  <ArrowForward
+                    sx={{
+                      fontSize: "22px",
+                    }}
+                  />
+                }
                 onClick={handleContinue}
                 disabled={!isValidEmail}
                 bgColor={isValidEmail ? Primary : loginGry}
@@ -589,7 +616,13 @@ export default function AdminLogin() {
               <CustomButton
                 text={loading ? "SIGNING IN..." : "SIGN IN TO ADMIN PORTAL"}
                 icon={
-                  !loading ? <ArrowForward sx={{ fontSize: "22px" }} /> : null
+                  !loading ? (
+                    <ArrowForward
+                      sx={{
+                        fontSize: "22px",
+                      }}
+                    />
+                  ) : null
                 }
                 onClick={handleLogin}
                 disabled={loading || !password.trim()}
